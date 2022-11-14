@@ -2,8 +2,10 @@ namespace domain;
 
 public class User
 {
-    public uint Id { get; }
-    public string? PhoneNumber { get; set; }
-    public string? Name { get; set; }
-    public Role Role { get; } = Role.Patient;
+    public int Id { get; set; }
+    public string PhoneNumber { get; set; }
+    public string Name { get; set; }
+    public string Secondname { get; set; }
+    public string Surname { get; set; }
+    public Role Role { get; set; } = Role.Patient;
 }

@@ -1,8 +1,7 @@
-namespace domain;
+namespace domain.Models;
 
-public class Appointment
+public class Schedule
 {
-    public uint UserId { get; set; }
     public uint DoctorId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

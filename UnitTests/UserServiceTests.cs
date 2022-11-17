@@ -4,12 +4,12 @@ using domain.UseCases;
 
 namespace UnitTesting;
 
-public class UserServic
+public class UserServiceTests
 {
     private readonly UserService _userSerivce;
     private readonly Mock<IUserRepository> _userRepositoryMock;
 
-    public UserServic()
+    public UserServiceTests()
     {
         _userRepositoryMock = new Mock<IUserRepository>(); _userSerivce = new UserService(_userRepositoryMock.Object);
     }

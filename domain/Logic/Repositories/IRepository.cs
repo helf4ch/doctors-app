@@ -1,6 +1,4 @@
-using domain.Models;
-
-namespace domain.Logic;
+namespace domain.Logic.Repositories;
 
 public interface IRepository<T> where T : class
 {
@@ -10,10 +8,4 @@ public interface IRepository<T> where T : class
     Result<T> Update(T item);
     Result Delete(int id);
     Result<T> Save();
-}
-
-public interface IUserRepository : IRepository<User>
-{
-    Result IsUserExists(string phoneNumber);
-    Result<User> GetUserByLogin(string phoneNumber);
 }

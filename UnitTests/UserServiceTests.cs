@@ -30,6 +30,23 @@ public class UserServiceTests
     }
 
     [Fact]
+    public void Registration_ShouldPass()
+    {
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+
+        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+            .Returns(() => Result.Fail(It.IsAny<string>()));
+
+        _userRepositoryMock.Setup(r => r.Create(It.IsAny<User>()))
+            .Returns(() => Result.Ok<User>(user));
+
+        var result = _userSerivce.Registration(user);
+
+        Assert.True(result.Success);
+        Assert.Equal(user, result.Value);
+    }
+
+    [Fact]
     public void AuthorizationEmptyPhoneNumber_ShouldFail()
     {
         var result = _userSerivce.Authorization("", "123");
@@ -74,5 +91,23 @@ public class UserServiceTests
 
         Assert.True(result.IsFailure);
         Assert.Equal("UserService: Wrong password.", result.Error);
+    }
+
+    [Fact]
+    public void Authorization_ShouldPass()
+    {
+        User userFromRepository = new User(0, "1", "A", "B", "C", Role.Patient, "pass1");
+
+        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+            .Returns(() => Result.Ok());
+
+        _userRepositoryMock.Setup(r => r.GetUserByLogin(It.IsAny<string>()))
+            .Returns(() => Result.Ok<User>(userFromRepository));
+
+        var result = _userSerivce.Authorization(userFromRepository.PhoneNumber,
+            userFromRepository.Password);
+
+        Assert.True(result.Success);
+        Assert.Equal(userFromRepository, result.Value);
     }
 }

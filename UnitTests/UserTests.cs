@@ -65,4 +65,12 @@ public class UserTests
         Assert.True(result.IsFailure);
         Assert.Equal("User: Null or empty Password.", result.Error);
     }
+
+    [Fact]
+    public void IsValid_ShouldPass()
+    {
+        var result = _user.IsValid();
+
+        Assert.True(result.Success);
+    }
 }

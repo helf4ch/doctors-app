@@ -7,6 +7,7 @@ namespace domain.UseCases;
 public class UserService
 {
     private IUserRepository _db;
+
     public UserService(IUserRepository db)
     {
         _db = db;
@@ -25,11 +26,6 @@ public class UserService
         }
 
         var success = _db.Create(user);
-
-        if (success.IsFailure)
-        {
-            return success;
-        }
 
         return success;
     }

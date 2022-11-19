@@ -22,10 +22,15 @@ public class UserService
 
         if (_db.IsUserExists(user.PhoneNumber).Success)
         {
-            return Result.Fail<User>("User already exists.");
+            return Result.Fail<User>("UserService: User already exists.");
         }
 
         var success = _db.Create(user);
+
+        if (success.IsFailure)
+        {
+            return Result.Fail<User>("UserService: " + success.Error);
+        }
 
         return success;
     }
@@ -34,34 +39,34 @@ public class UserService
     {
         if (string.IsNullOrEmpty(phoneNumber))
         {
-            return Result.Fail<User>("Null or empty PhoneNumber.");
+            return Result.Fail<User>("UserService: Null or empty PhoneNumber.");
         }
 
         if (string.IsNullOrEmpty(password))
         {
-            return Result.Fail<User>("Null or empty Password.");
+            return Result.Fail<User>("UserService: Null or empty Password.");
         }
 
         if (_db.IsUserExists(phoneNumber).IsFailure)
         {
-            return Result.Fail<User>("User doesn't exists.");
+            return Result.Fail<User>("UserService: User doesn't exists.");
         }
 
         var success = _db.GetUserByLogin(phoneNumber);
 
         if (success.IsFailure)
         {
-            return success;
+            return Result.Fail<User>("UserService: " + success.Error);
         }
 
         if (success.Value == null)
         {
-            return Result.Fail<User>("Nullable reference.");
+            return Result.Fail<User>("UserService: Nullable reference.");
         }
 
         if (success.Value.Password != password)
         {
-            return Result.Fail<User>("Wrong password.");
+            return Result.Fail<User>("UserService: Wrong password.");
         }
 
         return success;

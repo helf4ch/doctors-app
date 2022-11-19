@@ -12,57 +12,57 @@ public class UserTests
     }
 
     [Fact]
-    public void UserPhoneNumberEmpty_ShouldFail()
+    public void IsValidPhoneNumberEmpty_ShouldFail()
     {
         _user.PhoneNumber = string.Empty;
 
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty PhoneNumber.", result.Error);
+        Assert.Equal("User: Null or empty PhoneNumber.", result.Error);
     }
 
     [Fact]
-    public void UserNameEmpty_ShouldFail()
+    public void IsValidNameEmpty_ShouldFail()
     {
         _user.Name = string.Empty;
 
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Name.", result.Error);
+        Assert.Equal("User: Null or empty Name.", result.Error);
     }
 
     [Fact]
-    public void UserSecondnameEmpty_ShouldFail()
+    public void IsValidSecondnameEmpty_ShouldFail()
     {
         _user.Secondname = string.Empty;
 
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Secondname.", result.Error);
+        Assert.Equal("User: Null or empty Secondname.", result.Error);
     }
 
     [Fact]
-    public void UserSurnameEmpty_ShouldFail()
+    public void IsValidSurnameEmpty_ShouldFail()
     {
         _user.Surname = string.Empty;
 
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Surname.", result.Error);
+        Assert.Equal("User: Null or empty Surname.", result.Error);
     }
 
     [Fact]
-    public void UserPasswordEmpty_ShouldFail()
+    public void IsValidPasswordEmpty_ShouldFail()
     {
         _user.Password = string.Empty;
 
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Password.", result.Error);
+        Assert.Equal("User: Null or empty Password.", result.Error);
     }
 }

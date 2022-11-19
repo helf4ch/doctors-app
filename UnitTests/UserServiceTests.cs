@@ -26,7 +26,7 @@ public class UserServiceTests
         var result = _userSerivce.Registration(user);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User already exists.", result.Error);
+        Assert.Equal("UserService: User already exists.", result.Error);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty PhoneNumber.", result.Error);
+        Assert.Equal("UserService: Null or empty PhoneNumber.", result.Error);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("123", "");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Password.", result.Error);
+        Assert.Equal("UserService: Null or empty Password.", result.Error);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("123", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User doesn't exists.", result.Error);
+        Assert.Equal("UserService: User doesn't exists.", result.Error);
     }
 
     [Fact]
@@ -73,6 +73,6 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("123", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Wrong password.", result.Error);
+        Assert.Equal("UserService: Wrong password.", result.Error);
     }
 }

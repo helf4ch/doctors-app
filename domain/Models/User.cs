@@ -12,8 +12,15 @@ public class User
     public Role Role { get; set; } = Role.Patient;
     public string Password { get; set; }
 
-    public User(int id, string phoneNumber, string name, string secondname,
-        string surname, Role role, string password)
+    public User(
+        int id,
+        string phoneNumber,
+        string name,
+        string secondname,
+        string surname,
+        Role role,
+        string password
+    )
     {
         Id = id;
         PhoneNumber = phoneNumber;

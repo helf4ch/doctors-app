@@ -19,7 +19,8 @@ public class UserServiceTests
     [Fact]
     public void RegistrationUserAlreadyExists_ShouldFail()
     {
-        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.IsUserExists(It.IsAny<string>()))
             .Returns(() => Result.Ok());
 
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
@@ -34,10 +35,12 @@ public class UserServiceTests
     {
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.IsUserExists(It.IsAny<string>()))
             .Returns(() => Result.Fail(It.IsAny<string>()));
 
-        _userRepositoryMock.Setup(r => r.Create(It.IsAny<User>()))
+        _userRepositoryMock
+            .Setup(r => r.Create(It.IsAny<User>()))
             .Returns(() => Result.Ok<User>(user));
 
         var result = _userSerivce.Registration(user);
@@ -67,7 +70,8 @@ public class UserServiceTests
     [Fact]
     public void AuthorizationUserDoesntExist_ShouldFail()
     {
-        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.IsUserExists(It.IsAny<string>()))
             .Returns(() => Result.Fail(It.IsAny<string>()));
 
         var result = _userSerivce.Authorization("123", "123");
@@ -81,10 +85,12 @@ public class UserServiceTests
     {
         User userFromRepository = new User(0, "1", "A", "B", "C", Role.Patient, "pass1");
 
-        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.IsUserExists(It.IsAny<string>()))
             .Returns(() => Result.Ok());
 
-        _userRepositoryMock.Setup(r => r.GetUserByLogin(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.GetUserByLogin(It.IsAny<string>()))
             .Returns(() => Result.Ok<User>(userFromRepository));
 
         var result = _userSerivce.Authorization("123", "123");
@@ -98,14 +104,18 @@ public class UserServiceTests
     {
         User userFromRepository = new User(0, "1", "A", "B", "C", Role.Patient, "pass1");
 
-        _userRepositoryMock.Setup(r => r.IsUserExists(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.IsUserExists(It.IsAny<string>()))
             .Returns(() => Result.Ok());
 
-        _userRepositoryMock.Setup(r => r.GetUserByLogin(It.IsAny<string>()))
+        _userRepositoryMock
+            .Setup(r => r.GetUserByLogin(It.IsAny<string>()))
             .Returns(() => Result.Ok<User>(userFromRepository));
 
-        var result = _userSerivce.Authorization(userFromRepository.PhoneNumber,
-            userFromRepository.Password);
+        var result = _userSerivce.Authorization(
+            userFromRepository.PhoneNumber,
+            userFromRepository.Password
+        );
 
         Assert.True(result.Success);
         Assert.Equal(userFromRepository, result.Value);

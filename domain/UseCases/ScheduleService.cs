@@ -19,7 +19,7 @@ public class ScheduleService
 
         if (success.IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: " + success.Error);
+            return Result.Fail<Schedule>("ScheduleService.GetSchedule: " + success.Error);
         }
 
         return success;
@@ -29,24 +29,28 @@ public class ScheduleService
     {
         if (schedule.IsValid().IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: " + schedule.IsValid().Error);
+            return Result.Fail<Schedule>(
+                "ScheduleService.CreateSchedule: " + schedule.IsValid().Error
+            );
         }
 
         if (_db.IsExists(schedule.Id).Success)
         {
-            return Result.Fail<Schedule>("ScheduleService: Schedule is already exists.");
+            return Result.Fail<Schedule>(
+                "ScheduleService.CreateSchedule: Schedule is already exists."
+            );
         }
 
         if (_db.IsDateFree(schedule.DoctorId, schedule.Date).IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: Date is busy.");
+            return Result.Fail<Schedule>("ScheduleService.CreateSchedule: Date is busy.");
         }
 
         var success = _db.Create(schedule);
 
         if (success.IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: " + success.Error);
+            return Result.Fail<Schedule>("ScheduleService.CreateSchedule: " + success.Error);
         }
 
         return success;
@@ -56,19 +60,23 @@ public class ScheduleService
     {
         if (schedule.IsValid().IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: " + schedule.IsValid().Error);
+            return Result.Fail<Schedule>(
+                "ScheduleService.UpdateSchedule: " + schedule.IsValid().Error
+            );
         }
 
         if (_db.IsExists(schedule.Id).IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: Schedule doesn't exists.");
+            return Result.Fail<Schedule>(
+                "ScheduleService.UpdateSchedule: Schedule doesn't exists."
+            );
         }
 
         var success = _db.Update(schedule);
 
         if (success.IsFailure)
         {
-            return Result.Fail<Schedule>("ScheduleService: " + success.Error);
+            return Result.Fail<Schedule>("ScheduleService.UpdateSchedule: " + success.Error);
         }
 
         return success;
@@ -78,14 +86,14 @@ public class ScheduleService
     {
         if (_db.IsExists(id).IsFailure)
         {
-            return Result.Fail("ScheduleService: Schedule doesn't exists.");
+            return Result.Fail("ScheduleService.DeleteSchedule: Schedule doesn't exists.");
         }
 
         var success = _db.Delete(id);
 
         if (success.IsFailure)
         {
-            return Result.Fail("ScheduleService: " + success.Error);
+            return Result.Fail("ScheduleService.DeleteSchedule: " + success.Error);
         }
 
         return _db.Delete(id);

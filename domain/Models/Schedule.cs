@@ -23,7 +23,9 @@ public class Schedule
     {
         if (StartOfShift >= EndOfShift)
         {
-            return Result.Fail("Schedule: EndOfShift can't be less or equal then StartOfShift.");
+            return Result.Fail(
+                "Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift."
+            );
         }
 
         return Result.Ok();

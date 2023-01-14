@@ -26,7 +26,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.GetSchedule(1, new DateOnly(2000, 1, 1));
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: test", result.Error);
+        Assert.Equal("ScheduleService.GetSchedule: test", result.Error);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ScheduleServiceTests
 
         Assert.True(result.IsFailure);
         Assert.Equal(
-            "ScheduleService: Schedule: EndOfShift can't be less or equal then StartOfShift.",
+            "ScheduleService.CreateSchedule: Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift.",
             result.Error
         );
     }
@@ -85,7 +85,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.CreateSchedule(schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: Schedule is already exists.", result.Error);
+        Assert.Equal("ScheduleService.CreateSchedule: Schedule is already exists.", result.Error);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.CreateSchedule(schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: Date is busy.", result.Error);
+        Assert.Equal("ScheduleService.CreateSchedule: Date is busy.", result.Error);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.CreateSchedule(schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: create test", result.Error);
+        Assert.Equal("ScheduleService.CreateSchedule: create test", result.Error);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class ScheduleServiceTests
 
         Assert.True(result.IsFailure);
         Assert.Equal(
-            "ScheduleService: Schedule: EndOfShift can't be less or equal then StartOfShift.",
+            "ScheduleService.UpdateSchedule: Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift.",
             result.Error
         );
     }
@@ -198,7 +198,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.UpdateSchedule(schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: Schedule doesn't exists.", result.Error);
+        Assert.Equal("ScheduleService.UpdateSchedule: Schedule doesn't exists.", result.Error);
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.UpdateSchedule(schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: update test", result.Error);
+        Assert.Equal("ScheduleService.UpdateSchedule: update test", result.Error);
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.DeleteSchedule(1);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: Schedule doesn't exists.", result.Error);
+        Assert.Equal("ScheduleService.DeleteSchedule: Schedule doesn't exists.", result.Error);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class ScheduleServiceTests
         var result = _scheduleService.DeleteSchedule(1);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService: delete fail", result.Error);
+        Assert.Equal("ScheduleService.DeleteSchedule: delete fail", result.Error);
     }
 
     [Fact]

@@ -26,7 +26,7 @@ public class ScheduleTests
 
         Assert.True(result.IsFailure);
         Assert.Equal(
-            "Schedule: EndOfShift can't be less or equal then StartOfShift.",
+            "Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift.",
             result.Error
         );
     }

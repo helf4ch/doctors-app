@@ -19,7 +19,7 @@ public class UserTests
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User: Null or empty PhoneNumber.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty PhoneNumber.", result.Error);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class UserTests
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User: Null or empty Name.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Name.", result.Error);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class UserTests
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User: Null or empty Secondname.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Secondname.", result.Error);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class UserTests
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User: Null or empty Surname.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Surname.", result.Error);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class UserTests
         var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("User: Null or empty Password.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Password.", result.Error);
     }
 
     [Fact]

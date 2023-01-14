@@ -35,27 +35,27 @@ public class User
     {
         if (string.IsNullOrEmpty(PhoneNumber))
         {
-            return Result.Fail("User: Null or empty PhoneNumber.");
+            return Result.Fail("User.IsValid: Null or empty PhoneNumber.");
         }
 
         if (string.IsNullOrEmpty(Name))
         {
-            return Result.Fail("User: Null or empty Name.");
+            return Result.Fail("User.IsValid: Null or empty Name.");
         }
 
         if (string.IsNullOrEmpty(Secondname))
         {
-            return Result.Fail("User: Null or empty Secondname.");
+            return Result.Fail("User.IsValid: Null or empty Secondname.");
         }
 
         if (string.IsNullOrEmpty(Surname))
         {
-            return Result.Fail("User: Null or empty Surname.");
+            return Result.Fail("User.IsValid: Null or empty Surname.");
         }
 
         if (string.IsNullOrEmpty(Password))
         {
-            return Result.Fail("User: Null or empty Password.");
+            return Result.Fail("User.IsValid: Null or empty Password.");
         }
 
         return Result.Ok();

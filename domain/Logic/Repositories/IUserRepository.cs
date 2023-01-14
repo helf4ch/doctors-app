@@ -4,6 +4,6 @@ namespace domain.Logic.Repositories;
 
 public interface IUserRepository : IRepository<User>
 {
-    Result IsUserExists(string phoneNumber);
+    Result IsPhoneTaken(string phoneNumber);
     Result<User> GetUserByLogin(string phoneNumber);
 }

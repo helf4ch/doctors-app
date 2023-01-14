@@ -17,17 +17,65 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void RegistrationUserAlreadyExists_ShouldFail()
+    public void RegistrationIsValid_ShouldFail()
     {
-        _userRepositoryMock
-            .Setup(r => r.IsUserExists(It.IsAny<string>()))
-            .Returns(() => Result.Ok());
+        User user = new User(0, "1", "A", "B", String.Empty, Role.Patient, "pass");
 
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
         var result = _userSerivce.Registration(user);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("UserService: User already exists.", result.Error);
+        Assert.Equal(
+            "UserService.Registration: User.IsValid: Null or empty Surname.",
+            result.Error
+        );
+    }
+
+    [Fact]
+    public void RegistrationAlreadyExists_ShouldFail()
+    {
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+
+        _userRepositoryMock.Setup(r => r.IsExists(It.IsAny<int>())).Returns(() => Result.Ok());
+
+        var result = _userSerivce.Registration(user);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("UserService.Registration: User already exists.", result.Error);
+    }
+
+    [Fact]
+    public void RegistrationPhoneNumberTaken_ShouldFail()
+    {
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+
+        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
+        _userRepositoryMock
+            .Setup(r => r.IsPhoneTaken(It.IsAny<string>()))
+            .Returns(() => Result.Ok());
+
+        var result = _userSerivce.Registration(user);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("UserService.Registration: PhoneNumber is already taken.", result.Error);
+    }
+
+    [Fact]
+    public void RegistrationCreateError_ShouldFail()
+    {
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+
+        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
+        _userRepositoryMock
+            .Setup(r => r.IsPhoneTaken("1"))
+            .Returns(() => Result.Fail("phone test"));
+        _userRepositoryMock
+            .Setup(r => r.Create(It.IsAny<User>()))
+            .Returns(() => Result.Fail<User>("create test"));
+
+        var result = _userSerivce.Registration(user);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("UserService.Registration: create test", result.Error);
     }
 
     [Fact]
@@ -35,13 +83,11 @@ public class UserServiceTests
     {
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
+        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _userRepositoryMock
-            .Setup(r => r.IsUserExists(It.IsAny<string>()))
-            .Returns(() => Result.Fail(It.IsAny<string>()));
-
-        _userRepositoryMock
-            .Setup(r => r.Create(It.IsAny<User>()))
-            .Returns(() => Result.Ok<User>(user));
+            .Setup(r => r.IsPhoneTaken("1"))
+            .Returns(() => Result.Fail("phone test"));
+        _userRepositoryMock.Setup(r => r.Create(user)).Returns(() => Result.Ok<User>(user));
 
         var result = _userSerivce.Registration(user);
 
@@ -55,7 +101,7 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("UserService: Null or empty PhoneNumber.", result.Error);
+        Assert.Equal("UserService.Authorization: Null or empty PhoneNumber.", result.Error);
     }
 
     [Fact]
@@ -64,60 +110,61 @@ public class UserServiceTests
         var result = _userSerivce.Authorization("123", "");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("UserService: Null or empty Password.", result.Error);
+        Assert.Equal("UserService.Authorization: Null or empty Password.", result.Error);
     }
 
     [Fact]
     public void AuthorizationUserDoesntExist_ShouldFail()
     {
         _userRepositoryMock
-            .Setup(r => r.IsUserExists(It.IsAny<string>()))
-            .Returns(() => Result.Fail(It.IsAny<string>()));
+            .Setup(r => r.IsPhoneTaken(It.IsAny<string>()))
+            .Returns(() => Result.Fail("exists test"));
 
         var result = _userSerivce.Authorization("123", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("UserService: User doesn't exists.", result.Error);
+        Assert.Equal("UserService.Authorization: User doesn't exists.", result.Error);
+    }
+
+    [Fact]
+    public void AuthorizationGetByLoginError_ShouldFail()
+    {
+        _userRepositoryMock.Setup(r => r.IsPhoneTaken("1")).Returns(() => Result.Ok());
+        _userRepositoryMock
+            .Setup(r => r.GetUserByLogin(It.IsAny<string>()))
+            .Returns(() => Result.Fail<User>("get test"));
+
+        var result = _userSerivce.Authorization("1", "123");
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("UserService.Authorization: get test", result.Error);
     }
 
     [Fact]
     public void AuthorizationWrongPassword_ShouldFail()
     {
-        User userFromRepository = new User(0, "1", "A", "B", "C", Role.Patient, "pass1");
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock
-            .Setup(r => r.IsUserExists(It.IsAny<string>()))
-            .Returns(() => Result.Ok());
+        _userRepositoryMock.Setup(r => r.IsPhoneTaken("1")).Returns(() => Result.Ok());
+        _userRepositoryMock.Setup(r => r.GetUserByLogin("1")).Returns(() => Result.Ok<User>(user));
 
-        _userRepositoryMock
-            .Setup(r => r.GetUserByLogin(It.IsAny<string>()))
-            .Returns(() => Result.Ok<User>(userFromRepository));
-
-        var result = _userSerivce.Authorization("123", "123");
+        var result = _userSerivce.Authorization("1", "123");
 
         Assert.True(result.IsFailure);
-        Assert.Equal("UserService: Wrong password.", result.Error);
+        Assert.Equal("UserService.Authorization: Wrong password.", result.Error);
     }
 
     [Fact]
     public void Authorization_ShouldPass()
     {
-        User userFromRepository = new User(0, "1", "A", "B", "C", Role.Patient, "pass1");
+        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock
-            .Setup(r => r.IsUserExists(It.IsAny<string>()))
-            .Returns(() => Result.Ok());
+        _userRepositoryMock.Setup(r => r.IsPhoneTaken("1")).Returns(() => Result.Ok());
+        _userRepositoryMock.Setup(r => r.GetUserByLogin("1")).Returns(() => Result.Ok<User>(user));
 
-        _userRepositoryMock
-            .Setup(r => r.GetUserByLogin(It.IsAny<string>()))
-            .Returns(() => Result.Ok<User>(userFromRepository));
-
-        var result = _userSerivce.Authorization(
-            userFromRepository.PhoneNumber,
-            userFromRepository.Password
-        );
+        var result = _userSerivce.Authorization("1", "pass");
 
         Assert.True(result.Success);
-        Assert.Equal(userFromRepository, result.Value);
+        Assert.Equal(user, result.Value);
     }
 }

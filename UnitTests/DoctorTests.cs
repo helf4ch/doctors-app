@@ -8,7 +8,7 @@ public class DoctorTests
 
     public DoctorTests()
     {
-        _doctor = new Doctor(1, "A", "B", "C", new Specialization(1, "D"));
+        _doctor = new Doctor(1, "A", "B", "C", new Specialization(1, "D"), 1);
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class DoctorTests
         var result = _doctor.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Doctor: Null or empty Name.", result.Error);
+        Assert.Equal("Doctor.IsValid: Null or empty Name.", result.Error);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class DoctorTests
         var result = _doctor.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Doctor: Null or empty Secondname.", result.Error);
+        Assert.Equal("Doctor.IsValid: Null or empty Secondname.", result.Error);
     }
 
     [Fact]
@@ -41,7 +41,18 @@ public class DoctorTests
         var result = _doctor.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Doctor: Null or empty Surname.", result.Error);
+        Assert.Equal("Doctor.IsValid: Null or empty Surname.", result.Error);
+    }
+
+    [Fact]
+    public void IsValidAppointmentTimeMinutes_ShouldFail()
+    {
+        _doctor.AppointmentTimeMinutes = 0;
+
+        var result = _doctor.IsValid();
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Doctor.IsValid: AppointmentTimeMinutes can't be 0.", result.Error);
     }
 
     [Fact]

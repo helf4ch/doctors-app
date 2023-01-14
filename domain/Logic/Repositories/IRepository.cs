@@ -2,7 +2,6 @@ namespace domain.Logic.Repositories;
 
 public interface IRepository<T> where T : class
 {
-    List<T> GetAll();
     Result IsExists(int id);
     Result<T> GetItem(int id);
     Result<T> Create(T item);

@@ -21,12 +21,12 @@ public class ScheduleServiceTests
     {
         _scheduleRepositoryMock
             .Setup(r => r.GetSchedule(It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .Returns(() => Result.Fail<Schedule>("test"));
+            .Returns(() => Result.Fail<Schedule>("get test"));
 
         var result = _scheduleService.GetSchedule(1, new DateOnly(2000, 1, 1));
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService.GetSchedule: test", result.Error);
+        Assert.Equal("ScheduleService.GetSchedule: get test", result.Error);
     }
 
     [Fact]

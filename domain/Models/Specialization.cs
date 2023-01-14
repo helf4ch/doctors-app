@@ -17,7 +17,7 @@ public class Specialization
     {
         if (string.IsNullOrEmpty(Name))
         {
-            return Result.Fail("Specialization: Null or empty Name.");
+            return Result.Fail("Specialization.IsValid: Null or empty Name.");
         }
 
         return Result.Ok();

@@ -13,23 +13,62 @@ public class DoctorService
         _db = db;
     }
 
+    public Result<Doctor> GetDoctor(int id)
+    {
+        if (_db.IsExists(id).IsFailure)
+        {
+            return Result.Fail<Doctor>("DoctorService.GetDoctor: Doctor doesn't exists.");
+        }
+
+        var success = _db.GetItem(id);
+
+        if (success.IsFailure)
+        {
+            return Result.Fail<Doctor>("DoctorService.GetDoctor: " + success.Error);
+        }
+
+        return success;
+    }
+
     public Result<Doctor> CreateDoctor(Doctor doctor)
     {
         if (doctor.IsValid().IsFailure)
         {
-            return Result.Fail<Doctor>("DoctorService: " + doctor.IsValid().Error);
+            return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + doctor.IsValid().Error);
         }
 
-        if (_db.IsDoctorExists(doctor.Id).Success)
+        if (_db.IsExists(doctor.Id).Success)
         {
-            return Result.Fail<Doctor>("DoctorService: Doctor already exists.");
+            return Result.Fail<Doctor>("DoctorService.CreateDoctor: Doctor already exists.");
         }
 
         var success = _db.Create(doctor);
 
         if (success.IsFailure)
         {
-            return Result.Fail<Doctor>("DoctorService: " + success.Error);
+            return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + success.Error);
+        }
+
+        return success;
+    }
+
+    public Result<Doctor> UpdateDoctor(Doctor doctor)
+    {
+        if (doctor.IsValid().IsFailure)
+        {
+            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + doctor.IsValid().Error);
+        }
+
+        if (_db.IsExists(doctor.Id).IsFailure)
+        {
+            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: Doctor doesn't exists.");
+        }
+
+        var success = _db.Update(doctor);
+
+        if (success.IsFailure)
+        {
+            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + success.Error);
         }
 
         return success;
@@ -37,31 +76,47 @@ public class DoctorService
 
     public Result DeleteDoctor(int id)
     {
-        if (_db.IsDoctorExists(id).IsFailure)
+        if (_db.IsExists(id).IsFailure)
         {
-            return Result.Fail("DoctorService: Doctor doesn't exists.");
+            return Result.Fail("DoctorService.DeleteDoctor: Doctor doesn't exists.");
         }
 
-        return _db.Delete(id);
-    }
+        var success = _db.Delete(id);
 
-    public List<Doctor> GetAllDoctors()
-    {
-        return _db.GetAll();
-    }
-
-    public Result<Doctor> Search(int id)
-    {
-        if (_db.IsDoctorExists(id).IsFailure)
+        if (success.IsFailure)
         {
-            return Result.Fail<Doctor>("DoctorService: Doctor doesn't exists.");
+            return Result.Fail("DoctorService.DeleteDoctor: " + success.Error);
         }
 
-        return _db.GetItem(id);
+        return success;
     }
 
-    public List<Doctor> Search(Specialization spec)
+    public Result<List<Doctor>> GetAllDoctors()
     {
-        return _db.SearchBySpecialization(spec);
+        var success = _db.GetAll();
+
+        if (success.IsFailure)
+        {
+            return Result.Fail<List<Doctor>>("DoctorService.GetAllDoctors: " + success.Error);
+        }
+
+        return success;
+    }
+
+    public Result<List<Doctor>> Search(Specialization spec)
+    {
+        if (spec.IsValid().IsFailure)
+        {
+            return Result.Fail<List<Doctor>>("DoctorService.Search: " + spec.IsValid().Error);
+        }
+
+        var success = _db.SearchBySpecialization(spec);
+
+        if (success.IsFailure)
+        {
+            return Result.Fail<List<Doctor>>("DoctorService.Search: " + success.Error);
+        }
+
+        return success;
     }
 }

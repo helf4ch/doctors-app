@@ -9,7 +9,7 @@ public class User
     public string Name { get; set; }
     public string Secondname { get; set; }
     public string Surname { get; set; }
-    public Role Role { get; set; } = Role.Patient;
+    public int RoleId { get; set; }
     public string Password { get; set; }
 
     public User(
@@ -18,7 +18,7 @@ public class User
         string name,
         string secondname,
         string surname,
-        Role role,
+        int roleId,
         string password
     )
     {
@@ -27,7 +27,7 @@ public class User
         Name = name;
         Secondname = secondname;
         Surname = surname;
-        Role = role;
+        RoleId = roleId;
         Password = password;
     }
 

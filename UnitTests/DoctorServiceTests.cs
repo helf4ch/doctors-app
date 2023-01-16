@@ -32,7 +32,7 @@ public class DoctorServiceTests
     [Fact]
     public void GetDoctor_ShouldPass()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
 
         _doctorRepositoryMock.Setup(r => r.Get(0)).Returns(() => Result.Ok<Doctor>(doctor));
 
@@ -45,7 +45,7 @@ public class DoctorServiceTests
     [Fact]
     public void CreateDoctorIsValid_ShouldFail()
     {
-        Doctor doctor = new Doctor(0, "A", "B", String.Empty, new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", String.Empty, 1, 1);
 
         var result = _doctorService.CreateDoctor(doctor);
 
@@ -59,7 +59,7 @@ public class DoctorServiceTests
     [Fact]
     public void CreateDoctorCreateError_ShouldFail()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
 
         _doctorRepositoryMock
             .Setup(r => r.Create(It.IsAny<Doctor>()))
@@ -74,7 +74,7 @@ public class DoctorServiceTests
     [Fact]
     public void CreateDoctor_ShouldPass()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
 
         _doctorRepositoryMock.Setup(r => r.Create(doctor)).Returns(() => Result.Ok<Doctor>(doctor));
 
@@ -87,7 +87,7 @@ public class DoctorServiceTests
     [Fact]
     public void UpdateDoctorIsValid_ShouldFail()
     {
-        Doctor doctor = new Doctor(0, "A", "B", String.Empty, new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", String.Empty, 1, 1);
 
         var result = _doctorService.UpdateDoctor(doctor);
 
@@ -101,7 +101,7 @@ public class DoctorServiceTests
     [Fact]
     public void UpdateDoctorUpdateError_ShouldFail()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
 
         _doctorRepositoryMock
             .Setup(r => r.Update(It.IsAny<Doctor>()))
@@ -116,7 +116,7 @@ public class DoctorServiceTests
     [Fact]
     public void UpdateDoctor_ShouldPass()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
 
         _doctorRepositoryMock.Setup(r => r.Update(doctor)).Returns(() => Result.Ok<Doctor>(doctor));
 
@@ -165,7 +165,7 @@ public class DoctorServiceTests
     [Fact]
     public void GetAllDoctors_ShouldPass()
     {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
         List<Doctor> list = new List<Doctor>() { doctor, doctor, doctor };
 
         _doctorRepositoryMock.Setup(r => r.GetAll()).Returns(() => Result.Ok<List<Doctor>>(list));
@@ -177,29 +177,13 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void SearchBySpecIsValid_ShouldFail()
-    {
-        Specialization spec = new Specialization(0, String.Empty);
-
-        var result = _doctorService.Search(spec);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(
-            "DoctorService.Search: Specialization.IsValid: Null or empty Name.",
-            result.Error
-        );
-    }
-
-    [Fact]
     public void SearchBySpecSearchError_ShouldFail()
     {
-        Specialization spec = new Specialization(0, "D");
-
         _doctorRepositoryMock
-            .Setup(r => r.SearchBySpecialization(spec))
+            .Setup(r => r.SearchBySpecialization(1))
             .Returns(() => Result.Fail<List<Doctor>>("search test"));
 
-        var result = _doctorService.Search(spec);
+        var result = _doctorService.Search(1);
 
         Assert.True(result.IsFailure);
         Assert.Equal("DoctorService.Search: search test", result.Error);
@@ -208,15 +192,14 @@ public class DoctorServiceTests
     [Fact]
     public void SearchBySpec_ShouldPass()
     {
-        Specialization spec = new Specialization(0, "D");
-        Doctor doctor = new Doctor(0, "A", "B", "C", spec, 1);
+        Doctor doctor = new Doctor(0, "A", "B", "C", 1, 1);
         List<Doctor> list = new List<Doctor>() { doctor, doctor, doctor };
 
         _doctorRepositoryMock
-            .Setup(r => r.SearchBySpecialization(spec))
+            .Setup(r => r.SearchBySpecialization(1))
             .Returns(() => Result.Ok<List<Doctor>>(list));
 
-        var result = _doctorService.Search(spec);
+        var result = _doctorService.Search(1);
 
         Assert.True(result.Success);
         Assert.Equal(list, result.Value);

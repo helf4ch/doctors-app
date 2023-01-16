@@ -8,7 +8,7 @@ public class Doctor
     public string Name { get; set; }
     public string Secondname { get; set; }
     public string Surname { get; set; }
-    public Specialization Specialization { get; set; }
+    public int SpecializationId { get; set; }
     public int AppointmentTimeMinutes { get; set; }
 
     public Doctor(
@@ -16,7 +16,7 @@ public class Doctor
         string name,
         string secondname,
         string surname,
-        Specialization specialization,
+        int specializationId,
         int appointmentTimeMinutes
     )
     {
@@ -24,7 +24,7 @@ public class Doctor
         Name = name;
         Secondname = secondname;
         Surname = surname;
-        Specialization = specialization;
+        SpecializationId = specializationId;
         AppointmentTimeMinutes = appointmentTimeMinutes;
     }
 
@@ -48,11 +48,6 @@ public class Doctor
         if (AppointmentTimeMinutes == 0)
         {
             return Result.Fail("Doctor.IsValid: AppointmentTimeMinutes can't be 0.");
-        }
-
-        if (Specialization.IsValid().IsFailure)
-        {
-            return Result.Fail("Doctor.IsValid: " + Specialization.IsValid().Error);
         }
 
         return Result.Ok();

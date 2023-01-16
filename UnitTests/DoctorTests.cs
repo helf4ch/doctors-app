@@ -8,7 +8,7 @@ public class DoctorTests
 
     public DoctorTests()
     {
-        _doctor = new Doctor(1, "A", "B", "C", new Specialization(1, "D"), 1);
+        _doctor = new Doctor(1, "A", "B", "C", 1, 1);
     }
 
     [Fact]

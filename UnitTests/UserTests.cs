@@ -8,7 +8,7 @@ public class UserTests
 
     public UserTests()
     {
-        _user = new User(1, "2", "A", "B", "C", Role.Patient, "pass");
+        _user = new User(1, "2", "A", "B", "C", 1, "pass");
     }
 
     [Fact]

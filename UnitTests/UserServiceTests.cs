@@ -19,7 +19,7 @@ public class UserServiceTests
     [Fact]
     public void RegistrationIsValid_ShouldFail()
     {
-        User user = new User(0, "1", "A", "B", String.Empty, Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", String.Empty, 1, "pass");
 
         var result = _userSerivce.Registration(user);
 
@@ -33,7 +33,7 @@ public class UserServiceTests
     [Fact]
     public void RegistrationPhoneNumberTaken_ShouldFail()
     {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", "C", 1, "pass");
 
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken(It.IsAny<string>()))
@@ -48,7 +48,7 @@ public class UserServiceTests
     [Fact]
     public void RegistrationCreateError_ShouldFail()
     {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", "C", 1, "pass");
 
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken("1"))
@@ -66,7 +66,7 @@ public class UserServiceTests
     [Fact]
     public void Registration_ShouldPass()
     {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", "C", 1, "pass");
 
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken("1"))
@@ -127,7 +127,7 @@ public class UserServiceTests
     [Fact]
     public void AuthorizationWrongPassword_ShouldFail()
     {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", "C", 1, "pass");
 
         _userRepositoryMock.Setup(r => r.IsPhoneTaken("1")).Returns(() => Result.Ok());
         _userRepositoryMock.Setup(r => r.GetUserByLogin("1")).Returns(() => Result.Ok<User>(user));
@@ -141,7 +141,7 @@ public class UserServiceTests
     [Fact]
     public void Authorization_ShouldPass()
     {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
+        User user = new User(0, "1", "A", "B", "C", 1, "pass");
 
         _userRepositoryMock.Setup(r => r.IsPhoneTaken("1")).Returns(() => Result.Ok());
         _userRepositoryMock.Setup(r => r.GetUserByLogin("1")).Returns(() => Result.Ok<User>(user));

@@ -83,14 +83,9 @@ public class DoctorService
         return success;
     }
 
-    public Result<List<Doctor>> Search(Specialization spec)
+    public Result<List<Doctor>> Search(int specializationId)
     {
-        if (spec.IsValid().IsFailure)
-        {
-            return Result.Fail<List<Doctor>>("DoctorService.Search: " + spec.IsValid().Error);
-        }
-
-        var success = _db.SearchBySpecialization(spec);
+        var success = _db.SearchBySpecialization(specializationId);
 
         if (success.IsFailure)
         {

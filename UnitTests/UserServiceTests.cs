@@ -31,24 +31,10 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void RegistrationAlreadyExists_ShouldFail()
-    {
-        User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
-
-        _userRepositoryMock.Setup(r => r.IsExists(It.IsAny<int>())).Returns(() => Result.Ok());
-
-        var result = _userSerivce.Registration(user);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("UserService.Registration: User already exists.", result.Error);
-    }
-
-    [Fact]
     public void RegistrationPhoneNumberTaken_ShouldFail()
     {
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken(It.IsAny<string>()))
             .Returns(() => Result.Ok());
@@ -64,7 +50,6 @@ public class UserServiceTests
     {
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken("1"))
             .Returns(() => Result.Fail("phone test"));
@@ -83,7 +68,6 @@ public class UserServiceTests
     {
         User user = new User(0, "1", "A", "B", "C", Role.Patient, "pass");
 
-        _userRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _userRepositoryMock
             .Setup(r => r.IsPhoneTaken("1"))
             .Returns(() => Result.Fail("phone test"));

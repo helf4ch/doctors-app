@@ -17,24 +17,10 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void GetDoctorDoesntExists_ShouldFail()
-    {
-        _doctorRepositoryMock
-            .Setup(r => r.IsExists(It.IsAny<int>()))
-            .Returns(() => Result.Fail("exists test"));
-
-        var result = _doctorService.GetDoctor(1);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("DoctorService.GetDoctor: Doctor doesn't exists.", result.Error);
-    }
-
-    [Fact]
     public void GetDoctorGetItemError_ShouldFail()
     {
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Ok());
         _doctorRepositoryMock
-            .Setup(r => r.GetItem(It.IsAny<int>()))
+            .Setup(r => r.Get(It.IsAny<int>()))
             .Returns(() => Result.Fail<Doctor>("get test"));
 
         var result = _doctorService.GetDoctor(0);
@@ -48,8 +34,7 @@ public class DoctorServiceTests
     {
         Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
 
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Ok());
-        _doctorRepositoryMock.Setup(r => r.GetItem(0)).Returns(() => Result.Ok<Doctor>(doctor));
+        _doctorRepositoryMock.Setup(r => r.Get(0)).Returns(() => Result.Ok<Doctor>(doctor));
 
         var result = _doctorService.GetDoctor(0);
 
@@ -72,24 +57,10 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void CreateDoctorAlreadyExists_ShouldFail()
-    {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
-
-        _doctorRepositoryMock.Setup(r => r.IsExists(It.IsAny<int>())).Returns(() => Result.Ok());
-
-        var result = _doctorService.CreateDoctor(doctor);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("DoctorService.CreateDoctor: Doctor already exists.", result.Error);
-    }
-
-    [Fact]
     public void CreateDoctorCreateError_ShouldFail()
     {
         Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
 
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _doctorRepositoryMock
             .Setup(r => r.Create(It.IsAny<Doctor>()))
             .Returns(() => Result.Fail<Doctor>("create test"));
@@ -105,7 +76,6 @@ public class DoctorServiceTests
     {
         Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
 
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Fail("exists test"));
         _doctorRepositoryMock.Setup(r => r.Create(doctor)).Returns(() => Result.Ok<Doctor>(doctor));
 
         var result = _doctorService.CreateDoctor(doctor);
@@ -129,26 +99,10 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void UpdateDoctorDoesntExists_ShouldFail()
-    {
-        Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
-
-        _doctorRepositoryMock
-            .Setup(r => r.IsExists(It.IsAny<int>()))
-            .Returns(() => Result.Fail("exists test"));
-
-        var result = _doctorService.UpdateDoctor(doctor);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("DoctorService.UpdateDoctor: Doctor doesn't exists.", result.Error);
-    }
-
-    [Fact]
     public void UpdateDoctorUpdateError_ShouldFail()
     {
         Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
 
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Ok());
         _doctorRepositoryMock
             .Setup(r => r.Update(It.IsAny<Doctor>()))
             .Returns(() => Result.Fail<Doctor>("update test"));
@@ -164,7 +118,6 @@ public class DoctorServiceTests
     {
         Doctor doctor = new Doctor(0, "A", "B", "C", new Specialization(0, "D"), 1);
 
-        _doctorRepositoryMock.Setup(r => r.IsExists(0)).Returns(() => Result.Ok());
         _doctorRepositoryMock.Setup(r => r.Update(doctor)).Returns(() => Result.Ok<Doctor>(doctor));
 
         var result = _doctorService.UpdateDoctor(doctor);
@@ -174,22 +127,8 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void DeleteDoctorDoesntExists_ShouldFail()
-    {
-        _doctorRepositoryMock
-            .Setup(r => r.IsExists(It.IsAny<int>()))
-            .Returns(() => Result.Fail("exists test"));
-
-        var result = _doctorService.DeleteDoctor(1);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("DoctorService.DeleteDoctor: Doctor doesn't exists.", result.Error);
-    }
-
-    [Fact]
     public void DeleteDoctorDeleteError_ShouldFail()
     {
-        _doctorRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _doctorRepositoryMock
             .Setup(r => r.Delete(It.IsAny<int>()))
             .Returns(() => Result.Fail("delete test"));
@@ -203,7 +142,6 @@ public class DoctorServiceTests
     [Fact]
     public void DeleteDoctor_ShouldPass()
     {
-        _doctorRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _doctorRepositoryMock.Setup(r => r.Delete(1)).Returns(() => Result.Ok());
 
         var result = _doctorService.DeleteDoctor(1);

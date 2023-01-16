@@ -15,12 +15,7 @@ public class DoctorService
 
     public Result<Doctor> GetDoctor(int id)
     {
-        if (_db.IsExists(id).IsFailure)
-        {
-            return Result.Fail<Doctor>("DoctorService.GetDoctor: Doctor doesn't exists.");
-        }
-
-        var success = _db.GetItem(id);
+        var success = _db.Get(id);
 
         if (success.IsFailure)
         {
@@ -35,11 +30,6 @@ public class DoctorService
         if (doctor.IsValid().IsFailure)
         {
             return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + doctor.IsValid().Error);
-        }
-
-        if (_db.IsExists(doctor.Id).Success)
-        {
-            return Result.Fail<Doctor>("DoctorService.CreateDoctor: Doctor already exists.");
         }
 
         var success = _db.Create(doctor);
@@ -59,11 +49,6 @@ public class DoctorService
             return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + doctor.IsValid().Error);
         }
 
-        if (_db.IsExists(doctor.Id).IsFailure)
-        {
-            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: Doctor doesn't exists.");
-        }
-
         var success = _db.Update(doctor);
 
         if (success.IsFailure)
@@ -76,11 +61,6 @@ public class DoctorService
 
     public Result DeleteDoctor(int id)
     {
-        if (_db.IsExists(id).IsFailure)
-        {
-            return Result.Fail("DoctorService.DeleteDoctor: Doctor doesn't exists.");
-        }
-
         var success = _db.Delete(id);
 
         if (success.IsFailure)

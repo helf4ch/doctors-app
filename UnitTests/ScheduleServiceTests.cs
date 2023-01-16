@@ -70,25 +70,6 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void CreateScheduleAlreadyExists_ShouldFail()
-    {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
-
-        _scheduleRepositoryMock.Setup(r => r.IsExists(It.IsAny<int>())).Returns(() => Result.Ok());
-
-        var result = _scheduleService.CreateSchedule(schedule);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService.CreateSchedule: Schedule is already exists.", result.Error);
-    }
-
-    [Fact]
     public void CreateScheduleDateBusy_ShouldFail()
     {
         Schedule schedule = new Schedule(
@@ -99,7 +80,6 @@ public class ScheduleServiceTests
             new TimeOnly(14, 00)
         );
 
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Fail("exists test"));
         _scheduleRepositoryMock
             .Setup(r => r.IsDateFree(It.IsAny<int>(), It.IsAny<DateOnly>()))
             .Returns(() => Result.Fail("date test"));
@@ -121,7 +101,6 @@ public class ScheduleServiceTests
             new TimeOnly(14, 00)
         );
 
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Fail("exists test"));
         _scheduleRepositoryMock
             .Setup(r => r.IsDateFree(1, new DateOnly(2000, 1, 1)))
             .Returns(() => Result.Ok());
@@ -146,7 +125,6 @@ public class ScheduleServiceTests
             new TimeOnly(14, 00)
         );
 
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Fail("exists test"));
         _scheduleRepositoryMock
             .Setup(r => r.IsDateFree(1, new DateOnly(2000, 1, 1)))
             .Returns(() => Result.Ok());
@@ -181,27 +159,6 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void UpdateScheduleDoesntExists_ShouldFail()
-    {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
-
-        _scheduleRepositoryMock
-            .Setup(r => r.IsExists(It.IsAny<int>()))
-            .Returns(() => Result.Fail("exists test"));
-
-        var result = _scheduleService.UpdateSchedule(schedule);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService.UpdateSchedule: Schedule doesn't exists.", result.Error);
-    }
-
-    [Fact]
     public void UpdateScheduleUpdate_ShouldFail()
     {
         Schedule schedule = new Schedule(
@@ -212,7 +169,6 @@ public class ScheduleServiceTests
             new TimeOnly(14, 00)
         );
 
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _scheduleRepositoryMock
             .Setup(r => r.Update(It.IsAny<Schedule>()))
             .Returns(() => Result.Fail<Schedule>("update test"));
@@ -234,7 +190,6 @@ public class ScheduleServiceTests
             new TimeOnly(14, 00)
         );
 
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _scheduleRepositoryMock
             .Setup(r => r.Update(schedule))
             .Returns(() => Result.Ok<Schedule>(schedule));
@@ -246,22 +201,8 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void DeleteScheduleDoesntExists_ShouldFail()
-    {
-        _scheduleRepositoryMock
-            .Setup(r => r.IsExists(It.IsAny<int>()))
-            .Returns(() => Result.Fail("exitst test"));
-
-        var result = _scheduleService.DeleteSchedule(1);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService.DeleteSchedule: Schedule doesn't exists.", result.Error);
-    }
-
-    [Fact]
     public void DeleteScheduleDeleteError_ShouldFail()
     {
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _scheduleRepositoryMock
             .Setup(r => r.Delete(It.IsAny<int>()))
             .Returns(() => Result.Fail("delete fail"));
@@ -275,7 +216,6 @@ public class ScheduleServiceTests
     [Fact]
     public void DeleteSchedule_ShouldPass()
     {
-        _scheduleRepositoryMock.Setup(r => r.IsExists(1)).Returns(() => Result.Ok());
         _scheduleRepositoryMock.Setup(r => r.Delete(1)).Returns(() => Result.Ok());
 
         var result = _scheduleService.DeleteSchedule(1);

@@ -20,11 +20,6 @@ public class UserService
             return Result.Fail<User>("UserService.Registration: " + user.IsValid().Error);
         }
 
-        if (_db.IsExists(user.Id).Success)
-        {
-            return Result.Fail<User>("UserService.Registration: User already exists.");
-        }
-
         if (_db.IsPhoneTaken(user.PhoneNumber).Success)
         {
             return Result.Fail<User>("UserService.Registration: PhoneNumber is already taken.");

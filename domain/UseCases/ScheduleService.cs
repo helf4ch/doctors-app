@@ -1,10 +1,11 @@
 using domain.Logic;
 using domain.Logic.Repositories;
 using domain.Models;
+using domain.UseCases.Interfaces;
 
 namespace domain.UseCases;
 
-public class ScheduleService
+public class ScheduleService : IScheduleService
 {
     private IScheduleRepository _db;
 

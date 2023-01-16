@@ -17,7 +17,7 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public void GetDoctorGetItemError_ShouldFail()
+    public void GetDoctorGetError_ShouldFail()
     {
         _doctorRepositoryMock
             .Setup(r => r.Get(It.IsAny<int>()))

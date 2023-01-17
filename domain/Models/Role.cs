@@ -1,7 +1,25 @@
+using domain.Logic;
+
 namespace domain.Models;
 
-public enum Role
+public class Role
 {
-    Patient,
-    Administrator
+    public int Id { get; set; }
+    public string Name { get; set; }
+
+    public Role(int id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
+
+    public Result IsValid()
+    {
+        if (string.IsNullOrEmpty(Name))
+        {
+            return Result.Fail("Role.IsValid: Null or empty name.");
+        }
+
+        return Result.Ok();
+    }
 }

@@ -4,65 +4,73 @@ namespace UnitTesting;
 
 public class UserTests
 {
-    private readonly User user;
+    private readonly User _user;
 
     public UserTests()
     {
-        user = new User(1, "2", "A", "B", "C", Role.Patient, "pass");
+        _user = new User(1, "2", "A", "B", "C", 1, "pass");
     }
 
     [Fact]
-    public void UserPhoneNumberEmpty_ShouldFail()
+    public void IsValidPhoneNumberEmpty_ShouldFail()
     {
-        user.PhoneNumber = string.Empty;
+        _user.PhoneNumber = string.Empty;
 
-        var result = user.IsValid();
+        var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty PhoneNumber.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty PhoneNumber.", result.Error);
     }
 
     [Fact]
-    public void UserNameEmpty_ShouldFail()
+    public void IsValidNameEmpty_ShouldFail()
     {
-        user.Name = string.Empty;
+        _user.Name = string.Empty;
 
-        var result = user.IsValid();
+        var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Name.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Name.", result.Error);
     }
 
     [Fact]
-    public void UserSecondnameEmpty_ShouldFail()
+    public void IsValidSecondnameEmpty_ShouldFail()
     {
-        user.Secondname = string.Empty;
+        _user.Secondname = string.Empty;
 
-        var result = user.IsValid();
+        var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Secondname.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Secondname.", result.Error);
     }
 
     [Fact]
-    public void UserSurnameEmpty_ShouldFail()
+    public void IsValidSurnameEmpty_ShouldFail()
     {
-        user.Surname = string.Empty;
+        _user.Surname = string.Empty;
 
-        var result = user.IsValid();
+        var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Surname.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Surname.", result.Error);
     }
 
     [Fact]
-    public void UserPasswordEmpty_ShouldFail()
+    public void IsValidPasswordEmpty_ShouldFail()
     {
-        user.Password = string.Empty;
+        _user.Password = string.Empty;
 
-        var result = user.IsValid();
+        var result = _user.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Null or empty Password.", result.Error);
+        Assert.Equal("User.IsValid: Null or empty Password.", result.Error);
+    }
+
+    [Fact]
+    public void IsValid_ShouldPass()
+    {
+        var result = _user.IsValid();
+
+        Assert.True(result.Success);
     }
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "doctors-app", "doctors-app\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{D823896B-892A-445A-A9B3-5985D1515D3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{3C2F04F5-F199-4A07-8DB4-E2BE07E2DC33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D823896B-892A-445A-A9B3-5985D1515D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D823896B-892A-445A-A9B3-5985D1515D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D823896B-892A-445A-A9B3-5985D1515D3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2F04F5-F199-4A07-8DB4-E2BE07E2DC33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2F04F5-F199-4A07-8DB4-E2BE07E2DC33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2F04F5-F199-4A07-8DB4-E2BE07E2DC33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2F04F5-F199-4A07-8DB4-E2BE07E2DC33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

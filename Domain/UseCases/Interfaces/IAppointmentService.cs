@@ -1,7 +1,7 @@
-using domain.Logic;
-using domain.Models;
+using Domain.Logic;
+using Domain.Models;
 
-namespace domain.UseCases.Interfaces;
+namespace Domain.UseCases.Interfaces;
 
 public interface IAppointmentService
 {

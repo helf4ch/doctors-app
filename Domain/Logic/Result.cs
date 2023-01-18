@@ -1,4 +1,4 @@
-namespace domain.Logic;
+namespace Domain.Logic;
 
 public class Result
 {

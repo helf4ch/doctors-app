@@ -1,6 +1,6 @@
-using domain.Models;
+using Domain.Models;
 
-namespace domain.Logic.Repositories;
+namespace Domain.Logic.Repositories;
 
 public interface IScheduleRepository : IRepository<Schedule>
 {

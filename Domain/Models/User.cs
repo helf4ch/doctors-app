@@ -1,6 +1,6 @@
-using domain.Logic;
+using Domain.Logic;
 
-namespace domain.Models;
+namespace Domain.Models;
 
 public class User
 {

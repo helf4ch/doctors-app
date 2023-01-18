@@ -1,4 +1,4 @@
-namespace domain.Models;
+namespace Domain.Models;
 
 public class Appointment
 {

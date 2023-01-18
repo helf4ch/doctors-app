@@ -1,9 +1,9 @@
-using domain.Logic;
-using domain.Logic.Repositories;
-using domain.Models;
-using domain.UseCases.Interfaces;
+using Domain.Logic;
+using Domain.Logic.Repositories;
+using Domain.Models;
+using Domain.UseCases.Interfaces;
 
-namespace domain.UseCases;
+namespace Domain.UseCases;
 
 public class UserService : IUserService
 {

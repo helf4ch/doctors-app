@@ -1,7 +1,7 @@
-using domain.Logic;
-using domain.Logic.Repositories;
-using domain.Models;
-using domain.UseCases;
+using Domain.Logic;
+using Domain.Logic.Repositories;
+using Domain.Models;
+using Domain.UseCases;
 
 namespace UnitTesting;
 

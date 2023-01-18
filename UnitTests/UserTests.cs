@@ -1,4 +1,4 @@
-using domain.Models;
+using Domain.Models;
 
 namespace UnitTesting;
 

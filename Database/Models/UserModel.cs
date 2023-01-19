@@ -26,7 +26,12 @@ public class UserModel
     public int RoleId { get; set; }
 
     [Required]
+    [MaxLength(32)]
     public string Password { get; set; }
+
+    [Required]
+    [MaxLength(8)]
+    public string Salt { get; set; }
 
     public RoleModel Role { get; set; }
     public List<AppointmentModel> Appointments { get; set; }

@@ -3,9 +3,9 @@ using Domain.Models;
 
 namespace Database.Converters;
 
-public class DomainModelUserConverter
+public static class DomainModelUserConverter
 {
-    public static UserModel ToModel(User user)
+    public static UserModel ToModel(this User user)
     {
         return new UserModel
         {
@@ -20,7 +20,7 @@ public class DomainModelUserConverter
         };
     }
 
-    public static User ToDomain(UserModel user)
+    public static User ToDomain(this UserModel user)
     {
         return new User
         {

@@ -3,9 +3,9 @@ using Domain.Models;
 
 namespace Database.Converters;
 
-public class DomainModelDoctorConverter
+public static class DomainModelDoctorConverter
 {
-    public static DoctorModel ToModel(Doctor doctor)
+    public static DoctorModel ToModel(this Doctor doctor)
     {
         return new DoctorModel
         {
@@ -18,7 +18,7 @@ public class DomainModelDoctorConverter
         };
     }
 
-    public static Doctor ToDomain(DoctorModel doctor)
+    public static Doctor ToDomain(this DoctorModel doctor)
     {
         return new Doctor
         {

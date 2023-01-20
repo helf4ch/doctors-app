@@ -3,14 +3,14 @@ using Domain.Models;
 
 namespace Database.Converters;
 
-public class DomainModelSpecializationConverter
+public static class DomainModelSpecializationConverter
 {
-    public static SpecializationModel ToModel(Specialization specialization)
+    public static SpecializationModel ToModel(this Specialization specialization)
     {
         return new SpecializationModel { Id = specialization.Id, Name = specialization.Name };
     }
 
-    public static Specialization ToDomain(SpecializationModel specialization)
+    public static Specialization ToDomain(this SpecializationModel specialization)
     {
         return new Specialization { Id = specialization.Id, Name = specialization.Name };
     }

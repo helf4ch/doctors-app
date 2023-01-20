@@ -3,9 +3,9 @@ using Domain.Models;
 
 namespace Database.Converters;
 
-public class DomainModelAppointmentConverter
+public static class DomainModelAppointmentConverter
 {
-    public static AppointmentModel ToModel(Appointment appointment)
+    public static AppointmentModel ToModel(this Appointment appointment)
     {
         return new AppointmentModel
         {
@@ -17,7 +17,7 @@ public class DomainModelAppointmentConverter
         };
     }
 
-    public static Appointment ToDomain(AppointmentModel appointment)
+    public static Appointment ToDomain(this AppointmentModel appointment)
     {
         return new Appointment
         {

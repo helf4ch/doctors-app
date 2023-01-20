@@ -3,9 +3,9 @@ using Domain.Models;
 
 namespace Database.Converters;
 
-public class DomainModelScheduleConverter
+public static class DomainModelScheduleConverter
 {
-    public static ScheduleModel ToModel(Schedule schedule)
+    public static ScheduleModel ToModel(this Schedule schedule)
     {
         return new ScheduleModel
         {
@@ -17,7 +17,7 @@ public class DomainModelScheduleConverter
         };
     }
 
-    public static Schedule ToDomain(ScheduleModel schedule)
+    public static Schedule ToDomain(this ScheduleModel schedule)
     {
         return new Schedule
         {

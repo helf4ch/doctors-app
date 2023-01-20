@@ -10,15 +10,6 @@ public class Schedule
     public TimeOnly StartOfShift { get; set; }
     public TimeOnly EndOfShift { get; set; }
 
-    public Schedule(int id, int doctorId, DateOnly date, TimeOnly startOfShift, TimeOnly endOfShift)
-    {
-        Id = id;
-        DoctorId = doctorId;
-        Date = date;
-        StartOfShift = startOfShift;
-        EndOfShift = endOfShift;
-    }
-
     public Result IsValid()
     {
         if (StartOfShift >= EndOfShift)

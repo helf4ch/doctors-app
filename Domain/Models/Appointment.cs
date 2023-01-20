@@ -1,3 +1,5 @@
+using Domain.Logic;
+
 namespace Domain.Models;
 
 public class Appointment
@@ -8,12 +10,18 @@ public class Appointment
     public DateOnly Date { get; set; }
     public TimeOnly StartTime { get; set; }
 
-    public Appointment(int id, int userId, int doctorId, DateOnly date, TimeOnly startTime)
+    public Result IsValid()
     {
-        Id = id;
-        UserId = userId;
-        DoctorId = doctorId;
-        Date = date;
-        StartTime = startTime;
+        if (Date < DateOnly.Parse(DateTime.UtcNow.ToString("d")))
+        {
+            return Result.Fail("Appointment.IsValid: Date is invalid.");
+        }
+
+        if (StartTime < new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks))
+        {
+            return Result.Fail("Appointment.IsValid: Time is invalid.");
+        }
+
+        return Result.Ok();
     }
 }

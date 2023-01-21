@@ -13,33 +13,22 @@ public class UserService
         _db = db;
     }
 
-    public Result<User> Registration(User user)
+    public Result<User> GetUser(int id)
     {
-        user.Salt = User.GenerateSalt();
-
-        if (user.IsValid().IsFailure)
-        {
-            return Result.Fail<User>("UserService.Registration: " + user.IsValid().Error);
-        }
-
         try
         {
-            var item = _db.Get(user.PhoneNumber!);
+            var success = _db.Get(id);
 
-            if (item is not null)
+            if (success is null)
             {
-                return Result.Fail<User>("UserService.Registration: PhoneNumber is already taken.");
+                return Result.Fail<User>("UserService.UpdateUser: User doesn't exist.");
             }
-
-            user.Password = User.GeneratePassword(user.Password!, user.Salt);
-
-            var success = _db.Create(user);
 
             return Result.Ok<User>(success);
         }
         catch (Exception ex)
         {
-            return Result.Fail<User>("UserService.Registration: " + ex.Message);
+            return Result.Fail<User>("UserService,UpdateUser: " + ex.Message);
         }
     }
 
@@ -76,6 +65,69 @@ public class UserService
         catch (Exception ex)
         {
             return Result.Fail<User>("UserService.Authorization: " + ex.Message);
+        }
+    }
+
+    public Result<User> Registration(User user)
+    {
+        user.Salt = User.GenerateSalt();
+
+        if (user.IsValid().IsFailure)
+        {
+            return Result.Fail<User>("UserService.Registration: " + user.IsValid().Error);
+        }
+
+        try
+        {
+            var item = _db.Get(user.PhoneNumber!);
+
+            if (item is not null)
+            {
+                return Result.Fail<User>("UserService.Registration: PhoneNumber is already taken.");
+            }
+
+            user.Password = User.GeneratePassword(user.Password!, user.Salt);
+
+            var success = _db.Create(user);
+
+            return Result.Ok<User>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<User>("UserService.Registration: " + ex.Message);
+        }
+    }
+
+    public Result<User> UpdateUser(User user)
+    {
+        if (user.IsValid().IsFailure)
+        {
+            return Result.Fail<User>("UserService.UpdateUser: " + user.IsValid().Error);
+        }
+
+        try
+        {
+            var success = _db.Update(user);
+
+            return Result.Ok<User>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<User>("UserService.UpdateUser: " + ex.Message);
+        }
+    }
+
+    public Result<User> DeleteUser(int id)
+    {
+        try
+        {
+            var success = _db.Delete(id);
+
+            return Result.Ok<User>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<User>("UserService.DeleteUser: " + ex.Message);
         }
     }
 }

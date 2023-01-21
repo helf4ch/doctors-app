@@ -1,6 +1,8 @@
 using Database.Models;
 using Domain.Models;
 
+#nullable disable
+
 namespace Database.Converters;
 
 public static class DomainModelScheduleConverter

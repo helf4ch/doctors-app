@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+#nullable disable
+
 namespace Database.Models;
 
 public class AppointmentModel

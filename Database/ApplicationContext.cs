@@ -1,6 +1,8 @@
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 
+#nullable disable
+
 namespace Database;
 
 public class ApplicationContext : DbContext

@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
+#nullable disable
+
 namespace Database.Models;
 
 [Index(nameof(PhoneNumber), IsUnique = true)]

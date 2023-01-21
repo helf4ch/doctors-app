@@ -16,28 +16,42 @@ public class AppointmentRepository : IAppointmentRepository
 
     public Appointment? Get(int id)
     {
-        var result = _context.Appointments.FirstOrDefault(a => a.Id == id)?.ToDomain();
+        var result = _context.Appointments
+            .AsNoTracking()
+            .FirstOrDefault(a => a.Id == id)
+            ?.ToDomain();
 
         return result;
     }
 
-    public void Create(Appointment item)
+    public Appointment Create(Appointment item)
     {
-        _context.Appointments.Add(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Appointments.Add(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Update(Appointment item)
+    public Appointment Update(Appointment item)
     {
-        _context.Appointments.Update(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Appointments.Update(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Delete(int id)
+    public Appointment Delete(int id)
     {
         var appointment = _context.Appointments.AsNoTracking().First(a => a.Id == id);
+
         _context.Appointments.Remove(appointment);
         Save();
+
+        return appointment.ToDomain();
     }
 
     public void Save()
@@ -45,10 +59,22 @@ public class AppointmentRepository : IAppointmentRepository
         _context.SaveChanges();
     }
 
-    public List<Appointment> GetAll(int doctorId, DateOnly date, TimeOnly time)
+    public List<Appointment> GetAll(
+        int doctorId,
+        DateOnly date,
+        TimeOnly startTime,
+        TimeOnly endTime
+    )
     {
         var result = _context.Appointments
-            .Where(a => a.DoctorId == doctorId && a.Date == date && a.StartTime == time)
+            .AsNoTracking()
+            .Where(
+                a =>
+                    a.DoctorId == doctorId
+                    && a.Date == date
+                    && a.StartTime >= startTime
+                    && a.StartTime <= endTime
+            )
             .Select(a => a.ToDomain())
             .ToList();
 
@@ -58,6 +84,7 @@ public class AppointmentRepository : IAppointmentRepository
     public List<Appointment> GetAll(int specializationId, DateOnly date)
     {
         var result = _context.Doctors
+            .AsNoTracking()
             .Where(d => d.SpecializationId == specializationId)
             .Join(_context.Appointments, d => d.Id, a => a.DoctorId, (d, a) => a.ToDomain())
             .ToList();

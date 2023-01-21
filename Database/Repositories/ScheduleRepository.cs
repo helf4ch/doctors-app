@@ -16,28 +16,39 @@ public class ScheduleRepository : IScheduleRepository
 
     public Schedule? Get(int id)
     {
-        var result = _context.Schedules.FirstOrDefault(s => s.Id == id)?.ToDomain();
+        var result = _context.Schedules.AsNoTracking().FirstOrDefault(s => s.Id == id)?.ToDomain();
 
         return result;
     }
 
-    public void Create(Schedule item)
+    public Schedule Create(Schedule item)
     {
+        var model = item.ToModel();
+
         _context.Schedules.Add(item.ToModel());
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Update(Schedule item)
+    public Schedule Update(Schedule item)
     {
-        _context.Schedules.Update(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Schedules.Update(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Delete(int id)
+    public Schedule Delete(int id)
     {
         var schedule = _context.Schedules.AsNoTracking().First(s => s.Id == id);
+
         _context.Schedules.Remove(schedule);
         Save();
+
+        return schedule.ToDomain();
     }
 
     public void Save()
@@ -48,6 +59,7 @@ public class ScheduleRepository : IScheduleRepository
     public Schedule? Get(int doctorId, DateOnly date)
     {
         var result = _context.Schedules
+            .AsNoTracking()
             .FirstOrDefault(s => s.DoctorId == doctorId && s.Date == date)
             ?.ToDomain();
 

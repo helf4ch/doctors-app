@@ -1,11 +1,10 @@
 using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
-using Domain.UseCases.Interfaces;
 
 namespace Domain.UseCases;
 
-public class AppointmentService : IAppointmentService
+public class AppointmentService
 {
     private IAppointmentRepository _db;
 
@@ -16,56 +15,55 @@ public class AppointmentService : IAppointmentService
 
     public Result<Appointment> GetAppointment(int id)
     {
-        var success = _db.Get(id);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Appointment>("AppointmentService.GetAppointment: " + success.Error);
-        }
+            var success = _db.Get(id);
 
-        return success;
+            if (success is null)
+            {
+                return Result.Fail<Appointment>(
+                    "AppointmentService.GetAppointment: Appointment doesn't exist."
+                );
+            }
+
+            return Result.Ok<Appointment>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Appointment>("AppointmentService.GetAppointment: " + ex.Message);
+        }
     }
 
-    public Result<Appointment> SaveAppointment(
+    public Result<Appointment> CreateAppointment(
         Appointment appointment,
-        IDoctorService doctorService,
-        IScheduleService scheduleService
+        Doctor doctor,
+        Schedule schedule
     )
     {
-        var doctor = doctorService.GetDoctor(appointment.DoctorId);
-
-        if (doctor.IsFailure)
-        {
-            return Result.Fail<Appointment>("AppointmentService.SaveAppointment: " + doctor.Error);
-        }
-
-        if (doctor.Value == null)
+        if (appointment.IsValid().IsFailure)
         {
             return Result.Fail<Appointment>(
-                "AppointmentService.SaveAppointment: Doctor null reference."
+                "AppointmentService.SaveAppointment: " + appointment.IsValid().Error
             );
         }
 
-        var schedule = scheduleService.GetSchedule(appointment.DoctorId, appointment.Date);
-
-        if (schedule.IsFailure)
+        if (doctor.Id != appointment.DoctorId)
         {
             return Result.Fail<Appointment>(
-                "AppointmentService.SaveAppointment: " + schedule.Error
+                "AppointmentService.SaveAppointment: Doctor is invalid."
             );
         }
 
-        if (schedule.Value == null)
+        if (schedule.DoctorId != doctor.Id)
         {
             return Result.Fail<Appointment>(
-                "AppointmentService.SaveAppointment: Schedule null reference."
+                "AppointmentService.SaveAppointment: Schedule is invalid."
             );
         }
 
         if (
-            appointment.StartTime < schedule.Value.StartOfShift
-            || appointment.StartTime.AddMinutes(doctor.Value.AppointmentTimeMinutes)
-                > schedule.Value.EndOfShift
+            appointment.StartTime < schedule.StartOfShift
+            || appointment.StartTime.AddMinutes(doctor.AppointmentTimeMinutes) > schedule.EndOfShift
         )
         {
             return Result.Fail<Appointment>(
@@ -73,58 +71,80 @@ public class AppointmentService : IAppointmentService
             );
         }
 
-        if (_db.IsTimeFree(appointment.DoctorId, appointment.Date, appointment.StartTime).IsFailure)
+        try
         {
-            return Result.Fail<Appointment>("AppointmentService.SaveAppointment: Time is busy.");
+            var appointments = _db.GetAll(
+                appointment.DoctorId,
+                appointment.Date,
+                appointment.StartTime.AddMinutes(1 - doctor.AppointmentTimeMinutes),
+                appointment.StartTime.AddMinutes(doctor.AppointmentTimeMinutes - 1)
+            );
+
+            if (appointments.Any())
+            {
+                return Result.Fail<Appointment>(
+                    "AppointmentService.SaveAppointment: Time is busy."
+                );
+            }
+
+            var success = _db.Create(appointment);
+
+            return Result.Ok<Appointment>(success);
         }
-
-        var success = _db.Create(appointment);
-
-        if (success.IsFailure)
+        catch (Exception ex)
         {
-            return Result.Fail<Appointment>("AppointmentService.SaveAppointment: " + success.Error);
+            return Result.Fail<Appointment>("AppointmentService.SaveAppointment: " + ex.Message);
         }
-
-        return success;
     }
 
     public Result<Appointment> UpdateAppointment(Appointment appointment)
     {
-        var success = _db.Update(appointment);
-
-        if (success.IsFailure)
+        if (appointment.IsValid().IsFailure)
         {
             return Result.Fail<Appointment>(
-                "AppointmentService.UpdateAppointment: " + success.Error
+                "AppointmentService.UpdateAppointment: " + appointment.IsValid().Error
             );
         }
 
-        return success;
+        try
+        {
+            var success = _db.Update(appointment);
+
+            return Result.Ok<Appointment>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Appointment>("AppointmentService.UpdateAppointment: " + ex.Message);
+        }
     }
 
-    public Result DeleteAppointment(int id)
+    public Result<Appointment> DeleteAppointment(int id)
     {
-        var success = _db.Delete(id);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail("AppointmentService.DeleteAppointment: " + success.Error);
-        }
+            var success = _db.Delete(id);
 
-        return success;
+            return Result.Ok(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Appointment>("AppointmentService.DeleteAppointment: " + ex.Message);
+        }
     }
 
     public Result<List<Appointment>> GetAllAppointments(int specializationId, DateOnly date)
     {
-        var success = _db.GetAll(specializationId, date);
+        try
+        {
+            var success = _db.GetAll(specializationId, date);
 
-        if (success.IsFailure)
+            return Result.Ok<List<Appointment>>(success);
+        }
+        catch (Exception ex)
         {
             return Result.Fail<List<Appointment>>(
-                "AppointmentService.GetAllAppointments: " + success.Error
+                "AppointmentService.GetAllAppointments: " + ex.Message
             );
         }
-
-        return success;
     }
 }

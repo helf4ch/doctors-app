@@ -1,11 +1,10 @@
 using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
-using Domain.UseCases.Interfaces;
 
 namespace Domain.UseCases;
 
-public class DoctorService : IDoctorService
+public class DoctorService
 {
     private IDoctorRepository _db;
 
@@ -16,14 +15,21 @@ public class DoctorService : IDoctorService
 
     public Result<Doctor> GetDoctor(int id)
     {
-        var success = _db.Get(id);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Doctor>("DoctorService.GetDoctor: " + success.Error);
-        }
+            var success = _db.Get(id);
 
-        return success;
+            if (success is null)
+            {
+                return Result.Fail<Doctor>("DoctorService.GetDoctor: Doctor doesn't exist.");
+            }
+
+            return Result.Ok<Doctor>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Doctor>("DoctorService.GetDoctor: " + ex.Message);
+        }
     }
 
     public Result<Doctor> CreateDoctor(Doctor doctor)
@@ -33,14 +39,16 @@ public class DoctorService : IDoctorService
             return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + doctor.IsValid().Error);
         }
 
-        var success = _db.Create(doctor);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + success.Error);
-        }
+            var success = _db.Create(doctor);
 
-        return success;
+            return Result.Ok<Doctor>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Doctor>("DoctorService.CreateDoctor: " + ex.Message);
+        }
     }
 
     public Result<Doctor> UpdateDoctor(Doctor doctor)
@@ -50,49 +58,57 @@ public class DoctorService : IDoctorService
             return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + doctor.IsValid().Error);
         }
 
-        var success = _db.Update(doctor);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + success.Error);
-        }
+            var success = _db.Update(doctor);
 
-        return success;
+            return Result.Ok<Doctor>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Doctor>("DoctorService.UpdateDoctor: " + ex.Message);
+        }
     }
 
-    public Result DeleteDoctor(int id)
+    public Result<Doctor> DeleteDoctor(int id)
     {
-        var success = _db.Delete(id);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail("DoctorService.DeleteDoctor: " + success.Error);
-        }
+            var success = _db.Delete(id);
 
-        return success;
+            return Result.Ok<Doctor>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Doctor>("DoctorService.DeleteDoctor: " + ex.Message);
+        }
     }
 
     public Result<List<Doctor>> GetAllDoctors()
     {
-        var success = _db.GetAll();
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<List<Doctor>>("DoctorService.GetAllDoctors: " + success.Error);
-        }
+            var success = _db.GetAll();
 
-        return success;
+            return Result.Ok<List<Doctor>>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<List<Doctor>>("DoctorService.GetAllDoctors: " + ex.Message);
+        }
     }
 
-    public Result<List<Doctor>> Search(int specializationId)
+    public Result<List<Doctor>> GetAllDoctors(int specializationId)
     {
-        var success = _db.SearchBySpecialization(specializationId);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<List<Doctor>>("DoctorService.Search: " + success.Error);
-        }
+            var success = _db.GetAll(specializationId);
 
-        return success;
+            return Result.Ok<List<Doctor>>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<List<Doctor>>("DoctorService.GetAllDoctors: " + ex.Message);
+        }
     }
 }

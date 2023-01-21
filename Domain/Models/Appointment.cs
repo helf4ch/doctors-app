@@ -12,14 +12,19 @@ public class Appointment
 
     public Result IsValid()
     {
-        if (Date < DateOnly.Parse(DateTime.UtcNow.ToString("d")))
+        if (UserId == 0)
         {
-            return Result.Fail("Appointment.IsValid: Date is invalid.");
+            return Result.Fail("Appointment.IsValid: UserId is invalid.");
         }
 
-        if (StartTime < new TimeOnly(DateTime.UtcNow.TimeOfDay.Ticks))
+        if (DoctorId == 0)
         {
-            return Result.Fail("Appointment.IsValid: Time is invalid.");
+            return Result.Fail("Appointment.IsValid: DoctorId is invalid.");
+        }
+
+        if (Date <= DateOnly.Parse(DateTime.UtcNow.ToString("d")))
+        {
+            return Result.Fail("Appointment.IsValid: Date is invalid.");
         }
 
         return Result.Ok();

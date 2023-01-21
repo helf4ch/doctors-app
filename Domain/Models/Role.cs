@@ -14,6 +14,11 @@ public class Role
             return Result.Fail("Role.IsValid: Null or empty name.");
         }
 
+        if (Name.Length > 50)
+        {
+            return Result.Fail("Role.IsValid: Name has MaxLenght of 50.");
+        }
+
         return Result.Ok();
     }
 }

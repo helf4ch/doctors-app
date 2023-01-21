@@ -16,28 +16,42 @@ public class SpecializationRepository : ISpecializationRepository
 
     public Specialization? Get(int id)
     {
-        var result = _context.Specializations.FirstOrDefault(s => s.Id == id).ToDomain();
+        var result = _context.Specializations
+            .AsNoTracking()
+            .FirstOrDefault(s => s.Id == id)
+            .ToDomain();
 
         return result;
     }
 
-    public void Create(Specialization item)
+    public Specialization Create(Specialization item)
     {
-        _context.Specializations.Add(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Specializations.Add(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Update(Specialization item)
+    public Specialization Update(Specialization item)
     {
-        _context.Specializations.Update(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Specializations.Update(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Delete(int id)
+    public Specialization Delete(int id)
     {
         var specialization = _context.Specializations.AsNoTracking().First(s => s.Id == id);
+
         _context.Specializations.Remove(specialization);
         Save();
+
+        return specialization.ToDomain();
     }
 
     public void Save()

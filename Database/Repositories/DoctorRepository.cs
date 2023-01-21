@@ -16,28 +16,39 @@ public class DoctorRepository : IDoctorRepository
 
     public Doctor? Get(int id)
     {
-        var result = _context.Doctors.FirstOrDefault(d => d.Id == id)?.ToDomain();
+        var result = _context.Doctors.AsNoTracking().FirstOrDefault(d => d.Id == id)?.ToDomain();
 
         return result;
     }
 
-    public void Create(Doctor item)
+    public Doctor Create(Doctor item)
     {
-        _context.Doctors.Add(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Doctors.Add(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Update(Doctor item)
+    public Doctor Update(Doctor item)
     {
-        _context.Doctors.Update(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Doctors.Update(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Delete(int id)
+    public Doctor Delete(int id)
     {
         var doctor = _context.Doctors.AsNoTracking().First(d => d.Id == id);
+
         _context.Doctors.Remove(doctor);
         Save();
+
+        return doctor.ToDomain();
     }
 
     public void Save()
@@ -47,7 +58,7 @@ public class DoctorRepository : IDoctorRepository
 
     public List<Doctor> GetAll()
     {
-        var result = _context.Doctors.Select(d => d.ToDomain()).ToList();
+        var result = _context.Doctors.AsNoTracking().Select(d => d.ToDomain()).ToList();
 
         return result;
     }
@@ -55,6 +66,7 @@ public class DoctorRepository : IDoctorRepository
     public List<Doctor> GetAll(int specializationId)
     {
         var result = _context.Doctors
+            .AsNoTracking()
             .Where(d => d.SpecializationId == specializationId)
             .Select(d => d.ToDomain())
             .ToList();

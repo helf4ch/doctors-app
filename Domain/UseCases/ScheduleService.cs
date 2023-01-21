@@ -1,11 +1,10 @@
 using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
-using Domain.UseCases.Interfaces;
 
 namespace Domain.UseCases;
 
-public class ScheduleService : IScheduleService
+public class ScheduleService
 {
     private IScheduleRepository _db;
 
@@ -16,14 +15,23 @@ public class ScheduleService : IScheduleService
 
     public Result<Schedule> GetSchedule(int doctorId, DateOnly date)
     {
-        var success = _db.GetSchedule(doctorId, date);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Schedule>("ScheduleService.GetSchedule: " + success.Error);
-        }
+            var success = _db.Get(doctorId, date);
 
-        return success;
+            if (success is null)
+            {
+                return Result.Fail<Schedule>(
+                    "ScheduleService.GetSchedule: Schedule doesn't exist."
+                );
+            }
+
+            return Result.Ok<Schedule>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Schedule>("ScheduleService.GetSchedule: " + ex.Message);
+        }
     }
 
     public Result<Schedule> CreateSchedule(Schedule schedule)
@@ -35,19 +43,23 @@ public class ScheduleService : IScheduleService
             );
         }
 
-        if (_db.IsDateFree(schedule.DoctorId, schedule.Date).IsFailure)
+        try
         {
-            return Result.Fail<Schedule>("ScheduleService.CreateSchedule: Date is busy.");
+            var item = _db.Get(schedule.DoctorId, schedule.Date);
+
+            if (item is not null)
+            {
+                return Result.Fail<Schedule>("ScheduleService.CreateSchedule: Date is busy.");
+            }
+
+            var success = _db.Create(schedule);
+
+            return Result.Ok<Schedule>(success);
         }
-
-        var success = _db.Create(schedule);
-
-        if (success.IsFailure)
+        catch (Exception ex)
         {
-            return Result.Fail<Schedule>("ScheduleService.CreateSchedule: " + success.Error);
+            return Result.Fail<Schedule>("ScheduleService.CreateSchedule: " + ex.Message);
         }
-
-        return success;
     }
 
     public Result<Schedule> UpdateSchedule(Schedule schedule)
@@ -59,25 +71,29 @@ public class ScheduleService : IScheduleService
             );
         }
 
-        var success = _db.Update(schedule);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail<Schedule>("ScheduleService.UpdateSchedule: " + success.Error);
-        }
+            var success = _db.Update(schedule);
 
-        return success;
+            return Result.Ok<Schedule>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Schedule>("ScheduleService.UpdateSchedule: " + ex.Message);
+        }
     }
 
-    public Result DeleteSchedule(int id)
+    public Result<Schedule> DeleteSchedule(int id)
     {
-        var success = _db.Delete(id);
-
-        if (success.IsFailure)
+        try
         {
-            return Result.Fail("ScheduleService.DeleteSchedule: " + success.Error);
-        }
+            var success = _db.Delete(id);
 
-        return _db.Delete(id);
+            return Result.Ok<Schedule>(success);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<Schedule>("ScheduleService.DeleteSchedule: " + ex.Message);
+        }
     }
 }

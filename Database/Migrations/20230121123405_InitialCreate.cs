@@ -58,9 +58,9 @@ namespace Database.Migrations
                     Surname = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RoleId = table.Column<int>(type: "int", nullable: false),
-                    Password = table.Column<string>(type: "varchar(32)", maxLength: 32, nullable: false)
+                    Password = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Salt = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
+                    Salt = table.Column<string>(type: "varchar(32)", maxLength: 32, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>

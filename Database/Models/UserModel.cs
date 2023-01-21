@@ -28,11 +28,11 @@ public class UserModel
     public int RoleId { get; set; }
 
     [Required]
-    [MaxLength(32)]
+    [MaxLength(64)]
     public string Password { get; set; }
 
     [Required]
-    [MaxLength(8)]
+    [MaxLength(32)]
     public string Salt { get; set; }
 
     public RoleModel Role { get; set; }

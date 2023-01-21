@@ -14,6 +14,11 @@ public class Specialization
             return Result.Fail("Specialization.IsValid: Null or empty Name.");
         }
 
+        if (Name.Length > 50)
+        {
+            return Result.Fail("Specialization.IsValid: Name has MaxLenght of 50.");
+        }
+
         return Result.Ok();
     }
 }

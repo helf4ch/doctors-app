@@ -21,23 +21,34 @@ public class RoleRepository : IRoleRepository
         return result;
     }
 
-    public void Create(Role item)
+    public Role Create(Role item)
     {
-        _context.Roles.Add(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Roles.Add(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Update(Role item)
+    public Role Update(Role item)
     {
-        _context.Roles.Update(item.ToModel());
+        var model = item.ToModel();
+
+        _context.Roles.Update(model);
         Save();
+
+        return model.ToDomain();
     }
 
-    public void Delete(int id)
+    public Role Delete(int id)
     {
         var role = _context.Roles.AsNoTracking().First(r => r.Id == id);
+
         _context.Remove(role);
         Save();
+
+        return role.ToDomain();
     }
 
     public void Save()

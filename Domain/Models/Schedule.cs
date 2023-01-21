@@ -12,6 +12,11 @@ public class Schedule
 
     public Result IsValid()
     {
+        if (DoctorId == 0)
+        {
+            return Result.Fail("Schedule.IsValid: DoctorId is invalid.");
+        }
+
         if (StartOfShift >= EndOfShift)
         {
             return Result.Fail(

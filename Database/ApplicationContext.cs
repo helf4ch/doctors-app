@@ -14,8 +14,5 @@ public class ApplicationContext : DbContext
     public DbSet<SpecializationModel> Specializations { get; set; }
     public DbSet<UserModel> Users { get; set; }
 
-    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-    {
-        Database.EnsureCreated();
-    }
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 }

@@ -1,11 +1,10 @@
 using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
-using Domain.UseCases.Interfaces;
 
 namespace Domain.UseCases;
 
-public class UserService : IUserService
+public class UserService
 {
     private IUserRepository _db;
 
@@ -16,24 +15,32 @@ public class UserService : IUserService
 
     public Result<User> Registration(User user)
     {
+        user.Salt = User.GenerateSalt();
+
         if (user.IsValid().IsFailure)
         {
             return Result.Fail<User>("UserService.Registration: " + user.IsValid().Error);
         }
 
-        if (_db.IsPhoneTaken(user.PhoneNumber).Success)
+        try
         {
-            return Result.Fail<User>("UserService.Registration: PhoneNumber is already taken.");
+            var item = _db.Get(user.PhoneNumber!);
+
+            if (item is not null)
+            {
+                return Result.Fail<User>("UserService.Registration: PhoneNumber is already taken.");
+            }
+
+            user.Password = User.GeneratePassword(user.Password!, user.Salt);
+
+            var success = _db.Create(user);
+
+            return Result.Ok<User>(success);
         }
-
-        var success = _db.Create(user);
-
-        if (success.IsFailure)
+        catch (Exception ex)
         {
-            return Result.Fail<User>("UserService.Registration: " + success.Error);
+            return Result.Fail<User>("UserService.Registration: " + ex.Message);
         }
-
-        return success;
     }
 
     public Result<User> Authorization(string phoneNumber, string password)
@@ -48,28 +55,27 @@ public class UserService : IUserService
             return Result.Fail<User>("UserService.Authorization: Null or empty Password.");
         }
 
-        if (_db.IsPhoneTaken(phoneNumber).IsFailure)
+        try
         {
-            return Result.Fail<User>("UserService.Authorization: User doesn't exists.");
+            var success = _db.Get(phoneNumber);
+
+            if (success is null)
+            {
+                return Result.Fail<User>("UserService.Authorization: User doesn't exist.");
+            }
+
+            var generatedPassword = User.GeneratePassword(password, success.Salt!);
+
+            if (success.Password != generatedPassword)
+            {
+                return Result.Fail<User>("UserService.Authorization: Wrong Password.");
+            }
+
+            return Result.Ok<User>(success);
         }
-
-        var success = _db.GetUserByLogin(phoneNumber);
-
-        if (success.IsFailure)
+        catch (Exception ex)
         {
-            return Result.Fail<User>("UserService.Authorization: " + success.Error);
+            return Result.Fail<User>("UserService.Authorization: " + ex.Message);
         }
-
-        if (success.Value == null)
-        {
-            return Result.Fail<User>("UserService.Authorization: Nullable reference.");
-        }
-
-        if (success.Value.Password != password)
-        {
-            return Result.Fail<User>("UserService.Authorization: Wrong password.");
-        }
-
-        return success;
     }
 }

@@ -15,6 +15,12 @@ public class SpecializationService
 
     public Result<Specialization> GetSpecialization(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Specialization>(
+                "SpecializationService.GetSpecialization: Invalid id."
+            );
+        }
         try
         {
             var success = _db.Get(id);
@@ -84,6 +90,13 @@ public class SpecializationService
 
     public Result<Specialization> DeleteSpecialization(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Specialization>(
+                "SpecializationService.DeleteSpecialization: Invalid id."
+            );
+        }
+
         try
         {
             var success = _db.Delete(id);

@@ -1,6 +1,6 @@
 using Domain.Models;
 
-namespace UnitTesting;
+namespace UnitTests.DomainModelTests;
 
 public class DoctorTests
 {
@@ -8,7 +8,18 @@ public class DoctorTests
 
     public DoctorTests()
     {
-        _doctor = new Doctor(1, "A", "B", "C", 1, 1);
+        _doctor = GetModel();
+    }
+
+    public static Doctor GetModel()
+    {
+        return new Doctor
+        {
+            Id = 1,
+            Name = "Name",
+            SpecializationId = 1,
+            AppointmentTimeMinutes = 30
+        };
     }
 
     [Fact]
@@ -23,25 +34,47 @@ public class DoctorTests
     }
 
     [Fact]
-    public void IsValidSecondnameEmpty_ShouldFail()
+    public void IsValidNameLenght_ShouldFail()
     {
-        _doctor.Secondname = string.Empty;
+        _doctor.Name = new String('A', 51);
 
         var result = _doctor.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Doctor.IsValid: Null or empty Secondname.", result.Error);
+        Assert.Equal("Doctor.IsValid: Name has MaxLenght of 50.", result.Error);
     }
 
     [Fact]
-    public void IsValidSurnameEmpty_ShouldFail()
+    public void IsValidSecondnameLenght_ShouldFail()
     {
-        _doctor.Surname = string.Empty;
+        _doctor.Secondname = new String('A', 51);
 
         var result = _doctor.IsValid();
 
         Assert.True(result.IsFailure);
-        Assert.Equal("Doctor.IsValid: Null or empty Surname.", result.Error);
+        Assert.Equal("Doctor.IsValid: Secondname has MaxLenght of 50.", result.Error);
+    }
+
+    [Fact]
+    public void IsValidSurnameLenght_ShouldFail()
+    {
+        _doctor.Surname = new String('A', 51);
+
+        var result = _doctor.IsValid();
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Doctor.IsValid: Surname has MaxLenght of 50.", result.Error);
+    }
+
+    [Fact]
+    public void IsValidSpecializationInvalid_ShouldFail()
+    {
+        _doctor.SpecializationId = 0;
+
+        var result = _doctor.IsValid();
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Doctor.IsValid: SpecializationId is invalid.", result.Error);
     }
 
     [Fact]

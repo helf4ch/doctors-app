@@ -59,7 +59,7 @@ public class AppointmentRepository : IAppointmentRepository
         _context.SaveChanges();
     }
 
-    public List<Appointment> GetAll(
+    public List<Appointment> GetAllByTime(
         int doctorId,
         DateOnly date,
         TimeOnly startTime,
@@ -81,7 +81,7 @@ public class AppointmentRepository : IAppointmentRepository
         return result;
     }
 
-    public List<Appointment> GetAll(int specializationId, DateOnly date)
+    public List<Appointment> GetAllBySpecialization(int specializationId, DateOnly date)
     {
         var result = _context.Doctors
             .AsNoTracking()

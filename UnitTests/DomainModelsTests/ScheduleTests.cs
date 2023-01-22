@@ -1,6 +1,6 @@
 using Domain.Models;
 
-namespace UnitTesting;
+namespace UnitTests.DomainModelTests;
 
 public class ScheduleTests
 {
@@ -8,19 +8,36 @@ public class ScheduleTests
 
     public ScheduleTests()
     {
-        _schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        _schedule = GetModel();
+    }
+
+    public static Schedule GetModel()
+    {
+        return new Schedule
+        {
+            Id = 1,
+            DoctorId = 1,
+            Date = new DateOnly(2001, 9, 11),
+            StartOfShift = new TimeOnly(9, 0),
+            EndOfShift = new TimeOnly(17, 0)
+        };
+    }
+
+    [Fact]
+    public void IsValidDoctorInvalid_ShouldFail()
+    {
+        _schedule.DoctorId = 0;
+
+        var result = _schedule.IsValid();
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Schedule.IsValid: DoctorId is invalid.", result.Error);
     }
 
     [Fact]
     public void IsValidTimeError_ShouldFail()
     {
-        _schedule.StartOfShift = new TimeOnly(15, 00);
+        _schedule.StartOfShift = new TimeOnly(17, 00);
 
         var result = _schedule.IsValid();
 

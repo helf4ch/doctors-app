@@ -15,6 +15,11 @@ public class AppointmentService
 
     public Result<Appointment> GetAppointment(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Appointment>("AppointmentService.GetAppointment: Invalid id.");
+        }
+
         try
         {
             var success = _db.Get(id);
@@ -73,7 +78,7 @@ public class AppointmentService
 
         try
         {
-            var appointments = _db.GetAll(
+            var appointments = _db.GetAllByTime(
                 appointment.DoctorId,
                 appointment.Date,
                 appointment.StartTime.AddMinutes(1 - doctor.AppointmentTimeMinutes),
@@ -120,6 +125,11 @@ public class AppointmentService
 
     public Result<Appointment> DeleteAppointment(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Appointment>("AppointmentService.DeleteAppointment: Invalid id.");
+        }
+
         try
         {
             var success = _db.Delete(id);
@@ -132,11 +142,21 @@ public class AppointmentService
         }
     }
 
-    public Result<List<Appointment>> GetAllAppointments(int specializationId, DateOnly date)
+    public Result<List<Appointment>> GetAllAppointmentsBySpecialization(
+        int specializationId,
+        DateOnly date
+    )
     {
+        if (specializationId == 0)
+        {
+            return Result.Fail<List<Appointment>>(
+                "AppointmentService.GetAllAppointments: Invalid specializationId."
+            );
+        }
+
         try
         {
-            var success = _db.GetAll(specializationId, date);
+            var success = _db.GetAllBySpecialization(specializationId, date);
 
             return Result.Ok<List<Appointment>>(success);
         }

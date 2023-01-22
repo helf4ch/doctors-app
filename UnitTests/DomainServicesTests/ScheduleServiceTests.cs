@@ -1,9 +1,9 @@
-using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
 using Domain.UseCases;
+using UnitTests.DomainModelTests;
 
-namespace UnitTesting;
+namespace UnitTests.DomainServicesTests;
 
 public class ScheduleServiceTests
 {
@@ -17,54 +17,70 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void GetScheduleGetError_ShouldFail()
+    public void GetScheduleByDateIdInvalid_ShouldFail()
+    {
+        var result = _scheduleService.GetScheduleByDate(0, new DateOnly(2001, 9, 11));
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("ScheduleService.GetSchedule: Invalid doctorId.", result.Error);
+    }
+
+    [Fact]
+    public void GetScheduleByDateDoesntExist_ShouldFail()
     {
         _scheduleRepositoryMock
-            .Setup(r => r.GetSchedule(It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .Returns(() => Result.Fail<Schedule>("get test"));
+            .Setup(r => r.GetByDate(It.IsAny<int>(), It.IsAny<DateOnly>()))
+            .Returns(() => null);
 
-        var result = _scheduleService.GetSchedule(1, new DateOnly(2000, 1, 1));
+        var result = _scheduleService.GetScheduleByDate(1, new DateOnly(2001, 9, 11));
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("ScheduleService.GetSchedule: Schedule doesn't exist.", result.Error);
+    }
+
+    [Fact]
+    public void GetScheduleByDateException_ShouldFail()
+    {
+        _scheduleRepositoryMock
+            .Setup(r => r.GetByDate(It.IsAny<int>(), It.IsAny<DateOnly>()))
+            .Throws(() => new Exception("get test"));
+
+        var result = _scheduleService.GetScheduleByDate(1, new DateOnly(2001, 9, 11));
 
         Assert.True(result.IsFailure);
         Assert.Equal("ScheduleService.GetSchedule: get test", result.Error);
     }
 
     [Fact]
-    public void GetSchedule_ShouldPass()
+    public void GetScheduleByDate_ShouldPass()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.Id = 0;
 
         _scheduleRepositoryMock
-            .Setup(r => r.GetSchedule(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<Schedule>(schedule));
+            .Setup(r => r.GetByDate(schedule.DoctorId, schedule.Date))
+            .Returns(() => ScheduleTests.GetModel());
 
-        var result = _scheduleService.GetSchedule(1, new DateOnly(2000, 1, 1));
+        var result = _scheduleService.GetScheduleByDate(schedule.DoctorId, schedule.Date);
+
+        schedule.Id = result.Value!.Id;
 
         Assert.True(result.Success);
+        Assert.Equivalent(schedule, result.Value);
     }
 
     [Fact]
     public void CreateScheduleIsValid_ShouldFail()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.Id = 0;
+        schedule.DoctorId = 0;
 
         var result = _scheduleService.CreateSchedule(schedule);
 
         Assert.True(result.IsFailure);
         Assert.Equal(
-            "ScheduleService.CreateSchedule: Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift.",
+            "ScheduleService.CreateSchedule: Schedule.IsValid: DoctorId is invalid.",
             result.Error
         );
     }
@@ -72,17 +88,12 @@ public class ScheduleServiceTests
     [Fact]
     public void CreateScheduleDateBusy_ShouldFail()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.Id = 0;
 
         _scheduleRepositoryMock
-            .Setup(r => r.IsDateFree(It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .Returns(() => Result.Fail("date test"));
+            .Setup(r => r.GetByDate(It.IsAny<int>(), It.IsAny<DateOnly>()))
+            .Returns(() => ScheduleTests.GetModel());
 
         var result = _scheduleService.CreateSchedule(schedule);
 
@@ -91,22 +102,17 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void CreateScheduleCreateError_ShouldFail()
+    public void CreateScheduleException_ShouldFail()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.Id = 0;
 
         _scheduleRepositoryMock
-            .Setup(r => r.IsDateFree(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok());
+            .Setup(r => r.GetByDate(schedule.DoctorId, schedule.Date))
+            .Returns(() => null);
         _scheduleRepositoryMock
             .Setup(r => r.Create(It.IsAny<Schedule>()))
-            .Returns(() => Result.Fail<Schedule>("create test"));
+            .Throws(() => new Exception("create test"));
 
         var result = _scheduleService.CreateSchedule(schedule);
 
@@ -117,61 +123,47 @@ public class ScheduleServiceTests
     [Fact]
     public void CreateSchedule_ShouldPass()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.Id = 0;
 
         _scheduleRepositoryMock
-            .Setup(r => r.IsDateFree(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok());
+            .Setup(r => r.GetByDate(schedule.DoctorId, schedule.Date))
+            .Returns(() => null);
         _scheduleRepositoryMock
             .Setup(r => r.Create(schedule))
-            .Returns(() => Result.Ok<Schedule>(schedule));
+            .Returns(() => ScheduleTests.GetModel());
 
         var result = _scheduleService.CreateSchedule(schedule);
 
+        schedule.Id = result.Value!.Id;
+
         Assert.True(result.Success);
-        Assert.Equal(schedule, result.Value);
+        Assert.Equivalent(schedule, result.Value);
     }
 
     [Fact]
     public void UpdateScheduleIsValid_ShouldError()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.DoctorId = 0;
 
         var result = _scheduleService.UpdateSchedule(schedule);
 
         Assert.True(result.IsFailure);
         Assert.Equal(
-            "ScheduleService.UpdateSchedule: Schedule.IsValid: EndOfShift can't be less or equal then StartOfShift.",
+            "ScheduleService.UpdateSchedule: Schedule.IsValid: DoctorId is invalid.",
             result.Error
         );
     }
 
     [Fact]
-    public void UpdateScheduleUpdate_ShouldFail()
+    public void UpdateScheduleException_ShouldFail()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
 
         _scheduleRepositoryMock
             .Setup(r => r.Update(It.IsAny<Schedule>()))
-            .Returns(() => Result.Fail<Schedule>("update test"));
+            .Throws(() => new Exception("update test"));
 
         var result = _scheduleService.UpdateSchedule(schedule);
 
@@ -182,17 +174,9 @@ public class ScheduleServiceTests
     [Fact]
     public void UpdateSchedule_ShouldPass()
     {
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(13, 00),
-            new TimeOnly(14, 00)
-        );
+        Schedule schedule = ScheduleTests.GetModel();
 
-        _scheduleRepositoryMock
-            .Setup(r => r.Update(schedule))
-            .Returns(() => Result.Ok<Schedule>(schedule));
+        _scheduleRepositoryMock.Setup(r => r.Update(schedule)).Returns(() => schedule);
 
         var result = _scheduleService.UpdateSchedule(schedule);
 
@@ -201,25 +185,37 @@ public class ScheduleServiceTests
     }
 
     [Fact]
-    public void DeleteScheduleDeleteError_ShouldFail()
+    public void DeleteScheduleIdInvalid_ShouldFail()
+    {
+        var result = _scheduleService.DeleteSchedule(0);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("ScheduleService.DeleteSchedule: Invalid id.", result.Error);
+    }
+
+    [Fact]
+    public void DeleteScheduleException_ShouldFail()
     {
         _scheduleRepositoryMock
             .Setup(r => r.Delete(It.IsAny<int>()))
-            .Returns(() => Result.Fail("delete fail"));
+            .Throws(() => new Exception("delete test"));
 
         var result = _scheduleService.DeleteSchedule(1);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("ScheduleService.DeleteSchedule: delete fail", result.Error);
+        Assert.Equal("ScheduleService.DeleteSchedule: delete test", result.Error);
     }
 
     [Fact]
     public void DeleteSchedule_ShouldPass()
     {
-        _scheduleRepositoryMock.Setup(r => r.Delete(1)).Returns(() => Result.Ok());
+        Schedule schedule = ScheduleTests.GetModel();
+
+        _scheduleRepositoryMock.Setup(r => r.Delete(1)).Returns(() => schedule);
 
         var result = _scheduleService.DeleteSchedule(1);
 
         Assert.True(result.Success);
+        Assert.Equal(schedule, result.Value);
     }
 }

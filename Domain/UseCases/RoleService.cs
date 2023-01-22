@@ -15,6 +15,11 @@ public class RoleService
 
     public Result<Role> GetRole(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Role>("RoleService.GetRole: Invalid id.");
+        }
+
         try
         {
             var success = _db.Get(id);
@@ -72,6 +77,11 @@ public class RoleService
 
     public Result<Role> DeleteRole(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Role>("RoleService.DeleteRole: Invalid id.");
+        }
+
         try
         {
             var success = _db.Delete(id);

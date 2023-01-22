@@ -63,7 +63,7 @@ public class DoctorRepository : IDoctorRepository
         return result;
     }
 
-    public List<Doctor> GetAll(int specializationId)
+    public List<Doctor> GetAllBySpecialization(int specializationId)
     {
         var result = _context.Doctors
             .AsNoTracking()

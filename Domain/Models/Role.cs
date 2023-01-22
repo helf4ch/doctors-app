@@ -11,7 +11,7 @@ public class Role
     {
         if (string.IsNullOrEmpty(Name))
         {
-            return Result.Fail("Role.IsValid: Null or empty name.");
+            return Result.Fail("Role.IsValid: Null or empty Name.");
         }
 
         if (Name.Length > 50)

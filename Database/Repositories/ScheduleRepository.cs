@@ -56,7 +56,7 @@ public class ScheduleRepository : IScheduleRepository
         _context.SaveChanges();
     }
 
-    public Schedule? Get(int doctorId, DateOnly date)
+    public Schedule? GetByDate(int doctorId, DateOnly date)
     {
         var result = _context.Schedules
             .AsNoTracking()

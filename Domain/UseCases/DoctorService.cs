@@ -15,6 +15,11 @@ public class DoctorService
 
     public Result<Doctor> GetDoctor(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Doctor>("DoctorService.GetDoctor: Invalid id.");
+        }
+
         try
         {
             var success = _db.Get(id);
@@ -72,6 +77,11 @@ public class DoctorService
 
     public Result<Doctor> DeleteDoctor(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Doctor>("DoctorService.DeleteDoctor: Invalid id.");
+        }
+
         try
         {
             var success = _db.Delete(id);
@@ -98,17 +108,26 @@ public class DoctorService
         }
     }
 
-    public Result<List<Doctor>> GetAllDoctors(int specializationId)
+    public Result<List<Doctor>> GetAllDoctorsBySpecialization(int specializationId)
     {
+        if (specializationId == 0)
+        {
+            return Result.Fail<List<Doctor>>(
+                "DoctorService.GetAllDoctorsBySpecialization: Invalid specializationId."
+            );
+        }
+
         try
         {
-            var success = _db.GetAll(specializationId);
+            var success = _db.GetAllBySpecialization(specializationId);
 
             return Result.Ok<List<Doctor>>(success);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<Doctor>>("DoctorService.GetAllDoctors: " + ex.Message);
+            return Result.Fail<List<Doctor>>(
+                "DoctorService.GetAllDoctorsBySpecialization: " + ex.Message
+            );
         }
     }
 }

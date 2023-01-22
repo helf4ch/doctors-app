@@ -13,11 +13,16 @@ public class ScheduleService
         _db = db;
     }
 
-    public Result<Schedule> GetSchedule(int doctorId, DateOnly date)
+    public Result<Schedule> GetScheduleByDate(int doctorId, DateOnly date)
     {
+        if (doctorId == 0)
+        {
+            return Result.Fail<Schedule>("ScheduleService.GetSchedule: Invalid doctorId.");
+        }
+
         try
         {
-            var success = _db.Get(doctorId, date);
+            var success = _db.GetByDate(doctorId, date);
 
             if (success is null)
             {
@@ -45,7 +50,7 @@ public class ScheduleService
 
         try
         {
-            var item = _db.Get(schedule.DoctorId, schedule.Date);
+            var item = _db.GetByDate(schedule.DoctorId, schedule.Date);
 
             if (item is not null)
             {
@@ -85,6 +90,10 @@ public class ScheduleService
 
     public Result<Schedule> DeleteSchedule(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<Schedule>("ScheduleService.DeleteSchedule: Invalid id.");
+        }
         try
         {
             var success = _db.Delete(id);

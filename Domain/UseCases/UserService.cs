@@ -15,20 +15,25 @@ public class UserService
 
     public Result<User> GetUser(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<User>("UserService.GetUser: Invalid id.");
+        }
+
         try
         {
             var success = _db.Get(id);
 
             if (success is null)
             {
-                return Result.Fail<User>("UserService.UpdateUser: User doesn't exist.");
+                return Result.Fail<User>("UserService.GetUser: User doesn't exist.");
             }
 
             return Result.Ok<User>(success);
         }
         catch (Exception ex)
         {
-            return Result.Fail<User>("UserService,UpdateUser: " + ex.Message);
+            return Result.Fail<User>("UserService.GetUser: " + ex.Message);
         }
     }
 
@@ -46,7 +51,7 @@ public class UserService
 
         try
         {
-            var success = _db.Get(phoneNumber);
+            var success = _db.GetByPhoneNumber(phoneNumber);
 
             if (success is null)
             {
@@ -79,7 +84,7 @@ public class UserService
 
         try
         {
-            var item = _db.Get(user.PhoneNumber!);
+            var item = _db.GetByPhoneNumber(user.PhoneNumber!);
 
             if (item is not null)
             {
@@ -119,6 +124,11 @@ public class UserService
 
     public Result<User> DeleteUser(int id)
     {
+        if (id == 0)
+        {
+            return Result.Fail<User>("UserService.DeleteUser: Invalid id.");
+        }
+
         try
         {
             var success = _db.Delete(id);

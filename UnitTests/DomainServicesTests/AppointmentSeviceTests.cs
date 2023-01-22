@@ -1,9 +1,9 @@
-using Domain.Logic;
 using Domain.Logic.Repositories;
 using Domain.Models;
 using Domain.UseCases;
+using UnitTests.DomainModelTests;
 
-namespace UnitTesting;
+namespace UnitTests.DomainServicesTests;
 
 public class AppointmentServiceTests
 {
@@ -17,11 +17,31 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public void GetAppointmentGetError_ShouldFail()
+    public void GetAppointmentIdInvalid_ShouldFail()
+    {
+        var result = _appointmentService.GetAppointment(0);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("AppointmentService.GetAppointment: Invalid id.", result.Error);
+    }
+
+    [Fact]
+    public void GetAppointmentDoesntExist_ShouldFail()
+    {
+        _appointmentRepositoryMock.Setup(r => r.Get(It.IsAny<int>())).Returns(() => null);
+
+        var result = _appointmentService.GetAppointment(1);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("AppointmentService.GetAppointment: Appointment doesn't exist.", result.Error);
+    }
+
+    [Fact]
+    public void GetAppointmentException_ShouldFail()
     {
         _appointmentRepositoryMock
             .Setup(r => r.Get(It.IsAny<int>()))
-            .Returns(() => Result.Fail<Appointment>("get test"));
+            .Throws(() => new Exception("get test"));
 
         var result = _appointmentService.GetAppointment(1);
 
@@ -32,17 +52,9 @@ public class AppointmentServiceTests
     [Fact]
     public void GetAppointment_ShouldPass()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(1, 1, 1),
-            new TimeOnly(1, 1)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
 
-        _appointmentRepositoryMock
-            .Setup(r => r.Get(1))
-            .Returns(() => Result.Ok<Appointment>(appointment));
+        _appointmentRepositoryMock.Setup(r => r.Get(1)).Returns(() => appointment);
 
         var result = _appointmentService.GetAppointment(1);
 
@@ -51,240 +63,177 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public void SaveAppointmentGetDoctorError_ShouldFail()
+    public void CreateAppointmentIsValid_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(1, 1, 1),
-            new TimeOnly(1, 1)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        appointment.UserId = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
-
-        doctorService
-            .Setup(r => r.GetDoctor(It.IsAny<int>()))
-            .Returns(() => Result.Fail<Doctor>("get doctor test"));
-
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("AppointmentService.SaveAppointment: get doctor test", result.Error);
+        Assert.Equal(
+            "AppointmentService.SaveAppointment: Appointment.IsValid: UserId is invalid.",
+            result.Error
+        );
     }
 
     [Fact]
-    public void SaveAppointmentGetSchedule_ShouldFail()
+    public void CreateAppointmentDoctorInvalid_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(1, 1, 1),
-            new TimeOnly(1, 1)
-        );
-        Doctor doctor = new Doctor(1, "A", "B", "C", 1, 1);
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        doctor.Id = 0;
+        Schedule schedule = ScheduleTests.GetModel();
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
-
-        doctorService.Setup(r => r.GetDoctor(1)).Returns(() => Result.Ok<Doctor>(doctor));
-        scheduleService
-            .Setup(r => r.GetSchedule(It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .Returns(() => Result.Fail<Schedule>("get schedule test"));
-
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
         Assert.True(result.IsFailure);
-        Assert.Equal("AppointmentService.SaveAppointment: get schedule test", result.Error);
+        Assert.Equal("AppointmentService.SaveAppointment: Doctor is invalid.", result.Error);
     }
 
     [Fact]
-    public void SaveAppointmentStartTimeInvalid_ShouldFail()
+    public void CreateAppointmentScheduleInvalid_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(16, 30)
-        );
-        Doctor doctor = new Doctor(1, "A", "B", "C", 1, 60);
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(8, 00),
-            new TimeOnly(17, 00)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
+        schedule.DoctorId = 0;
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
-        doctorService.Setup(r => r.GetDoctor(1)).Returns(() => Result.Ok<Doctor>(doctor));
-        scheduleService
-            .Setup(r => r.GetSchedule(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<Schedule>(schedule));
+        Assert.True(result.IsFailure);
+        Assert.Equal("AppointmentService.SaveAppointment: Schedule is invalid.", result.Error);
+    }
 
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+    [Fact]
+    public void CreateAppointmentStartTimeInvalid_ShouldFail()
+    {
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        appointment.StartTime = new TimeOnly(18, 0);
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
+
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
         Assert.True(result.IsFailure);
         Assert.Equal("AppointmentService.SaveAppointment: StartTime is invalid.", result.Error);
     }
 
     [Fact]
-    public void SaveAppointmentTimeBusy_ShouldFail()
+    public void CreateAppointmentTimeBusy_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
-        );
-        Doctor doctor = new Doctor(1, "A", "B", "C", 1, 60);
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(8, 00),
-            new TimeOnly(17, 00)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
-
-        doctorService.Setup(r => r.GetDoctor(1)).Returns(() => Result.Ok<Doctor>(doctor));
-        scheduleService
-            .Setup(r => r.GetSchedule(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<Schedule>(schedule));
         _appointmentRepositoryMock
-            .Setup(r => r.IsTimeFree(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<TimeOnly>()))
-            .Returns(() => Result.Fail("time busy test"));
+            .Setup(
+                r =>
+                    r.GetAllByTime(
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<TimeOnly>(),
+                        It.IsAny<TimeOnly>()
+                    )
+            )
+            .Returns(() => new List<Appointment> { appointment });
 
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
         Assert.True(result.IsFailure);
         Assert.Equal("AppointmentService.SaveAppointment: Time is busy.", result.Error);
     }
 
     [Fact]
-    public void SaveAppointmentCreateError_ShouldFail()
+    public void CreateAppointmentException_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
-        );
-        Doctor doctor = new Doctor(1, "A", "B", "C", 1, 60);
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(8, 00),
-            new TimeOnly(17, 00)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
-
-        doctorService.Setup(r => r.GetDoctor(1)).Returns(() => Result.Ok<Doctor>(doctor));
-        scheduleService
-            .Setup(r => r.GetSchedule(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<Schedule>(schedule));
         _appointmentRepositoryMock
-            .Setup(r => r.IsTimeFree(1, new DateOnly(2000, 1, 1), new TimeOnly(15, 30)))
-            .Returns(() => Result.Ok());
+            .Setup(
+                r =>
+                    r.GetAllByTime(
+                        appointment.DoctorId,
+                        appointment.Date,
+                        appointment.StartTime.AddMinutes(1 - doctor.AppointmentTimeMinutes),
+                        appointment.StartTime.AddMinutes(doctor.AppointmentTimeMinutes - 1)
+                    )
+            )
+            .Returns(() => new List<Appointment> { });
         _appointmentRepositoryMock
             .Setup(r => r.Create(It.IsAny<Appointment>()))
-            .Returns(() => Result.Fail<Appointment>("create test"));
+            .Throws(() => new Exception("create test"));
 
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
 
         Assert.True(result.IsFailure);
         Assert.Equal("AppointmentService.SaveAppointment: create test", result.Error);
     }
 
     [Fact]
-    public void SaveAppointment_ShouldPass()
+    public void CreateAppointment_ShouldPass()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
-        );
-        Doctor doctor = new Doctor(1, "A", "B", "C", 1, 60);
-        Schedule schedule = new Schedule(
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(8, 00),
-            new TimeOnly(17, 00)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.Id = 0;
+        Doctor doctor = DoctorTests.GetModel();
+        Schedule schedule = ScheduleTests.GetModel();
 
-        var doctorService = new Mock<IDoctorService>();
-        var scheduleService = new Mock<IScheduleService>();
-
-        doctorService.Setup(r => r.GetDoctor(1)).Returns(() => Result.Ok<Doctor>(doctor));
-        scheduleService
-            .Setup(r => r.GetSchedule(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<Schedule>(schedule));
         _appointmentRepositoryMock
-            .Setup(r => r.IsTimeFree(1, new DateOnly(2000, 1, 1), new TimeOnly(15, 30)))
-            .Returns(() => Result.Ok());
+            .Setup(
+                r =>
+                    r.GetAllByTime(
+                        appointment.DoctorId,
+                        appointment.Date,
+                        appointment.StartTime.AddMinutes(1 - doctor.AppointmentTimeMinutes),
+                        appointment.StartTime.AddMinutes(doctor.AppointmentTimeMinutes - 1)
+                    )
+            )
+            .Returns(() => new List<Appointment> { });
         _appointmentRepositoryMock
             .Setup(r => r.Create(appointment))
-            .Returns(() => Result.Ok<Appointment>(appointment));
+            .Returns(() => AppointmentTests.GetModel());
 
-        var result = _appointmentService.SaveAppointment(
-            appointment,
-            doctorService.Object,
-            scheduleService.Object
-        );
+        var result = _appointmentService.CreateAppointment(appointment, doctor, schedule);
+
+        appointment.Id = result.Value!.Id;
 
         Assert.True(result.Success);
-        Assert.Equal(appointment, result.Value);
+        Assert.Equivalent(appointment, result.Value);
     }
 
     [Fact]
-    public void UpdateAppointmentUpdateError_ShouldFail()
+    public void UpdateAppointmentIsValid_ShouldFail()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
+        Appointment appointment = AppointmentTests.GetModel();
+        appointment.UserId = 0;
+
+        var result = _appointmentService.UpdateAppointment(appointment);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(
+            "AppointmentService.UpdateAppointment: Appointment.IsValid: UserId is invalid.",
+            result.Error
         );
+    }
+
+    [Fact]
+    public void UpdateAppointmentException_ShouldFail()
+    {
+        Appointment appointment = AppointmentTests.GetModel();
 
         _appointmentRepositoryMock
             .Setup(r => r.Update(It.IsAny<Appointment>()))
-            .Returns(() => Result.Fail<Appointment>("update test"));
+            .Throws(() => new Exception("update test"));
 
         var result = _appointmentService.UpdateAppointment(appointment);
 
@@ -295,17 +244,9 @@ public class AppointmentServiceTests
     [Fact]
     public void UpdateAppointment_ShouldPass()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
-        );
+        Appointment appointment = AppointmentTests.GetModel();
 
-        _appointmentRepositoryMock
-            .Setup(r => r.Update(appointment))
-            .Returns(() => Result.Ok<Appointment>(appointment));
+        _appointmentRepositoryMock.Setup(r => r.Update(appointment)).Returns(() => appointment);
 
         var result = _appointmentService.UpdateAppointment(appointment);
 
@@ -314,11 +255,20 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public void DeleteAppointmentDeleteError_ShouldFail()
+    public void DeleteAppointmentIdInvalid_ShouldFail()
+    {
+        var result = _appointmentService.DeleteAppointment(0);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("AppointmentService.DeleteAppointment: Invalid id.", result.Error);
+    }
+
+    [Fact]
+    public void DeleteAppointmentException_ShouldFail()
     {
         _appointmentRepositoryMock
             .Setup(r => r.Delete(It.IsAny<int>()))
-            .Returns(() => Result.Fail<Appointment>("delete test"));
+            .Throws(() => new Exception("delete test"));
 
         var result = _appointmentService.DeleteAppointment(1);
 
@@ -329,43 +279,58 @@ public class AppointmentServiceTests
     [Fact]
     public void DeleteAppointment_ShouldPass()
     {
-        _appointmentRepositoryMock.Setup(r => r.Delete(1)).Returns(() => Result.Ok());
+        Appointment appointment = AppointmentTests.GetModel();
+
+        _appointmentRepositoryMock.Setup(r => r.Delete(1)).Returns(() => appointment);
 
         var result = _appointmentService.DeleteAppointment(1);
 
         Assert.True(result.Success);
+        Assert.Equal(appointment, result.Value);
     }
 
     [Fact]
-    public void GetAllAppointmentsGetAllError_ShouldFail()
+    public void GetAllAppointmentsBySpecializationIdInvalid_ShouldFail()
+    {
+        var result = _appointmentService.GetAllAppointmentsBySpecialization(
+            0,
+            new DateOnly(2001, 9, 11)
+        );
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(
+            "AppointmentService.GetAllAppointments: Invalid specializationId.",
+            result.Error
+        );
+    }
+
+    [Fact]
+    public void GetAllAppointmentsBySpecializationException_ShouldFail()
     {
         _appointmentRepositoryMock
-            .Setup(r => r.GetAll(It.IsAny<int>(), It.IsAny<DateOnly>()))
-            .Returns(() => Result.Fail<List<Appointment>>("get all test"));
+            .Setup(r => r.GetAllBySpecialization(It.IsAny<int>(), It.IsAny<DateOnly>()))
+            .Throws(() => new Exception("get all test"));
 
-        var result = _appointmentService.GetAllAppointments(1, new DateOnly(2000, 1, 1));
+        var result = _appointmentService.GetAllAppointmentsBySpecialization(
+            1,
+            new DateOnly(2001, 9, 11)
+        );
 
         Assert.True(result.IsFailure);
         Assert.Equal("AppointmentService.GetAllAppointments: get all test", result.Error);
     }
 
     [Fact]
-    public void GetAllAppointments_ShouldPass()
+    public void GetAllAppointmentsBySpecialization_ShouldPass()
     {
-        Appointment appointment = new Appointment(
-            1,
-            1,
-            1,
-            new DateOnly(2000, 1, 1),
-            new TimeOnly(15, 30)
-        );
-        List<Appointment> list = new List<Appointment> { appointment, appointment, appointment };
+        Appointment appointment = AppointmentTests.GetModel();
+        List<Appointment> list = new List<Appointment> { appointment };
 
         _appointmentRepositoryMock
-            .Setup(r => r.GetAll(1, new DateOnly(2000, 1, 1)))
-            .Returns(() => Result.Ok<List<Appointment>>(list));
+            .Setup(r => r.GetAllBySpecialization(1, appointment.Date))
+            .Returns(() => list);
 
-        var result = _appointmentService.GetAllAppointments(1, new DateOnly(2000, 1, 1));
+        var result = _appointmentService.GetAllAppointmentsBySpecialization(1, appointment.Date);
 
         Assert.True(result.Success);
         Assert.Equal(list, result.Value);

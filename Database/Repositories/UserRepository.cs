@@ -56,7 +56,7 @@ public class UserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    public User? Get(string phoneNumber)
+    public User? GetByPhoneNumber(string phoneNumber)
     {
         var result = _context.Users
             .AsNoTracking()

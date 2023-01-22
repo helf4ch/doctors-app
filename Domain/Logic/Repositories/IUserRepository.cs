@@ -4,5 +4,5 @@ namespace Domain.Logic.Repositories;
 
 public interface IUserRepository : IRepository<User>
 {
-    User? Get(string phoneNumber);
+    User? GetByPhoneNumber(string phoneNumber);
 }

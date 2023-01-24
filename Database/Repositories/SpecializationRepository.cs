@@ -14,48 +14,49 @@ public class SpecializationRepository : ISpecializationRepository
         _context = context;
     }
 
-    public Specialization? Get(int id)
+    public async Task<Specialization?> Get(int id)
     {
-        var result = _context.Specializations
+        var result = await _context.Specializations
             .AsNoTracking()
-            .FirstOrDefault(s => s.Id == id)
-            .ToDomain();
+            .FirstOrDefaultAsync(s => s.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public Specialization Create(Specialization item)
+    public async Task<Specialization> Create(Specialization item)
     {
         var model = item.ToModel();
 
-        _context.Specializations.Add(model);
-        Save();
+        await _context.Specializations.AddAsync(model);
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Specialization Update(Specialization item)
+    public async Task<Specialization> Update(Specialization item)
     {
         var model = item.ToModel();
 
         _context.Specializations.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Specialization Delete(int id)
+    public async Task<Specialization> Delete(int id)
     {
-        var specialization = _context.Specializations.AsNoTracking().First(s => s.Id == id);
+        var specialization = await _context.Specializations
+            .AsNoTracking()
+            .FirstAsync(s => s.Id == id);
 
         _context.Specializations.Remove(specialization);
-        Save();
+        await Save();
 
         return specialization.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

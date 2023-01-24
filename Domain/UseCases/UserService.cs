@@ -13,7 +13,7 @@ public class UserService
         _db = db;
     }
 
-    public Result<User> GetUser(int id)
+    public async Task<Result<User>> GetUser(int id)
     {
         if (id == 0)
         {
@@ -22,7 +22,7 @@ public class UserService
 
         try
         {
-            var success = _db.Get(id);
+            var success = await _db.Get(id);
 
             if (success is null)
             {
@@ -37,7 +37,7 @@ public class UserService
         }
     }
 
-    public Result<User> Authorization(string phoneNumber, string password)
+    public async Task<Result<User>> Authorization(string phoneNumber, string password)
     {
         if (string.IsNullOrEmpty(phoneNumber))
         {
@@ -51,7 +51,7 @@ public class UserService
 
         try
         {
-            var success = _db.GetByPhoneNumber(phoneNumber);
+            var success = await _db.GetByPhoneNumber(phoneNumber);
 
             if (success is null)
             {
@@ -73,7 +73,7 @@ public class UserService
         }
     }
 
-    public Result<User> Registration(User user)
+    public async Task<Result<User>> Registration(User user)
     {
         user.Salt = User.GenerateSalt();
 
@@ -84,7 +84,7 @@ public class UserService
 
         try
         {
-            var item = _db.GetByPhoneNumber(user.PhoneNumber!);
+            var item = await _db.GetByPhoneNumber(user.PhoneNumber!);
 
             if (item is not null)
             {
@@ -93,7 +93,7 @@ public class UserService
 
             user.Password = User.GeneratePassword(user.Password!, user.Salt);
 
-            var success = _db.Create(user);
+            var success = await _db.Create(user);
 
             return Result.Ok<User>(success);
         }
@@ -103,7 +103,7 @@ public class UserService
         }
     }
 
-    public Result<User> UpdateUser(User user)
+    public async Task<Result<User>> UpdateUser(User user)
     {
         if (user.IsValid().IsFailure)
         {
@@ -112,7 +112,7 @@ public class UserService
 
         try
         {
-            var success = _db.Update(user);
+            var success = await _db.Update(user);
 
             return Result.Ok<User>(success);
         }
@@ -122,7 +122,7 @@ public class UserService
         }
     }
 
-    public Result<User> DeleteUser(int id)
+    public async Task<Result<User>> DeleteUser(int id)
     {
         if (id == 0)
         {
@@ -131,7 +131,7 @@ public class UserService
 
         try
         {
-            var success = _db.Delete(id);
+            var success = await _db.Delete(id);
 
             return Result.Ok<User>(success);
         }

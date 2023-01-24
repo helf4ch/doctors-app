@@ -14,55 +14,54 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public User? Get(int id)
+    public async Task<User?> Get(int id)
     {
-        var result = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id)?.ToDomain();
+        var result = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public User Create(User item)
+    public async Task<User> Create(User item)
     {
         var model = item.ToModel();
 
-        _context.Users.Add(model);
-        Save();
+        await _context.Users.AddAsync(model);
+        await Save();
 
         return model.ToDomain();
     }
 
-    public User Update(User item)
+    public async Task<User> Update(User item)
     {
         var model = item.ToModel();
 
         _context.Users.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public User Delete(int id)
+    public async Task<User> Delete(int id)
     {
-        var user = _context.Users.AsNoTracking().First(u => u.Id == id);
+        var user = await _context.Users.AsNoTracking().FirstAsync(u => u.Id == id);
 
         _context.Users.Remove(user);
-        Save();
+        await Save();
 
         return user.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public User? GetByPhoneNumber(string phoneNumber)
+    public async Task<User?> GetByPhoneNumber(string phoneNumber)
     {
-        var result = _context.Users
+        var result = await _context.Users
             .AsNoTracking()
-            .FirstOrDefault(u => u.PhoneNumber == phoneNumber)
-            ?.ToDomain();
+            .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
 
-        return result;
+        return result?.ToDomain();
     }
 }

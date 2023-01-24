@@ -14,45 +14,45 @@ public class RoleRepository : IRoleRepository
         _context = context;
     }
 
-    public Role? Get(int id)
+    public async Task<Role?> Get(int id)
     {
-        var result = _context.Roles.FirstOrDefault(r => r.Id == id)?.ToDomain();
+        var result = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public Role Create(Role item)
+    public async Task<Role> Create(Role item)
     {
         var model = item.ToModel();
 
-        _context.Roles.Add(model);
-        Save();
+        await _context.Roles.AddAsync(model);
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Role Update(Role item)
+    public async Task<Role> Update(Role item)
     {
         var model = item.ToModel();
 
         _context.Roles.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Role Delete(int id)
+    public async Task<Role> Delete(int id)
     {
-        var role = _context.Roles.AsNoTracking().First(r => r.Id == id);
+        var role = await _context.Roles.AsNoTracking().FirstAsync(r => r.Id == id);
 
         _context.Remove(role);
-        Save();
+        await Save();
 
         return role.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

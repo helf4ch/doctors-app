@@ -14,55 +14,54 @@ public class ScheduleRepository : IScheduleRepository
         _context = context;
     }
 
-    public Schedule? Get(int id)
+    public async Task<Schedule?> Get(int id)
     {
-        var result = _context.Schedules.AsNoTracking().FirstOrDefault(s => s.Id == id)?.ToDomain();
+        var result = await _context.Schedules.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public Schedule Create(Schedule item)
+    public async Task<Schedule> Create(Schedule item)
     {
         var model = item.ToModel();
 
-        _context.Schedules.Add(item.ToModel());
-        Save();
+        await _context.Schedules.AddAsync(item.ToModel());
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Schedule Update(Schedule item)
+    public async Task<Schedule> Update(Schedule item)
     {
         var model = item.ToModel();
 
         _context.Schedules.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Schedule Delete(int id)
+    public async Task<Schedule> Delete(int id)
     {
-        var schedule = _context.Schedules.AsNoTracking().First(s => s.Id == id);
+        var schedule = await _context.Schedules.AsNoTracking().FirstAsync(s => s.Id == id);
 
         _context.Schedules.Remove(schedule);
-        Save();
+        await Save();
 
         return schedule.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Schedule? GetByDate(int doctorId, DateOnly date)
+    public async Task<Schedule?> GetByDate(int doctorId, DateOnly date)
     {
-        var result = _context.Schedules
+        var result = await _context.Schedules
             .AsNoTracking()
-            .FirstOrDefault(s => s.DoctorId == doctorId && s.Date == date)
-            ?.ToDomain();
+            .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date == date);
 
-        return result;
+        return result?.ToDomain();
     }
 }

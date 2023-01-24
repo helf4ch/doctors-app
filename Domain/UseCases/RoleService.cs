@@ -13,7 +13,7 @@ public class RoleService
         _db = db;
     }
 
-    public Result<Role> GetRole(int id)
+    public async Task<Result<Role>> GetRole(int id)
     {
         if (id == 0)
         {
@@ -22,7 +22,7 @@ public class RoleService
 
         try
         {
-            var success = _db.Get(id);
+            var success = await _db.Get(id);
 
             if (success is null)
             {
@@ -37,7 +37,7 @@ public class RoleService
         }
     }
 
-    public Result<Role> CreateRole(Role role)
+    public async Task<Result<Role>> CreateRole(Role role)
     {
         if (role.IsValid().IsFailure)
         {
@@ -46,7 +46,7 @@ public class RoleService
 
         try
         {
-            var success = _db.Create(role);
+            var success = await _db.Create(role);
 
             return Result.Ok<Role>(success);
         }
@@ -56,7 +56,7 @@ public class RoleService
         }
     }
 
-    public Result<Role> UpdateRole(Role role)
+    public async Task<Result<Role>> UpdateRole(Role role)
     {
         if (role.IsValid().IsFailure)
         {
@@ -65,7 +65,7 @@ public class RoleService
 
         try
         {
-            var success = _db.Update(role);
+            var success = await _db.Update(role);
 
             return Result.Ok<Role>(success);
         }
@@ -75,7 +75,7 @@ public class RoleService
         }
     }
 
-    public Result<Role> DeleteRole(int id)
+    public async Task<Result<Role>> DeleteRole(int id)
     {
         if (id == 0)
         {
@@ -84,7 +84,7 @@ public class RoleService
 
         try
         {
-            var success = _db.Delete(id);
+            var success = await _db.Delete(id);
 
             return Result.Ok<Role>(success);
         }

@@ -18,9 +18,9 @@ public class SpecializationController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<SpecializationView> GetSpecialization(int id)
+    public async Task<ActionResult<SpecializationView>> GetSpecialization(int id)
     {
-        var result = _specializationService.GetSpecialization(id);
+        var result = await _specializationService.GetSpecialization(id);
 
         if (result.IsFailure)
         {
@@ -32,11 +32,11 @@ public class SpecializationController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPost]
-    public ActionResult<SpecializationView> CreateSpecialization(string name)
+    public async Task<ActionResult<SpecializationView>> CreateSpecialization(string name)
     {
         var specialization = new Specialization { Name = name };
 
-        var result = _specializationService.CreateSpecialization(specialization);
+        var result = await _specializationService.CreateSpecialization(specialization);
 
         if (result.IsFailure)
         {
@@ -48,11 +48,11 @@ public class SpecializationController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("{id}")]
-    public ActionResult<SpecializationView> UpdateSpecialization(int id, string name)
+    public async Task<ActionResult<SpecializationView>> UpdateSpecialization(int id, string name)
     {
         var specialization = new Specialization { Id = id, Name = name };
 
-        var result = _specializationService.UpdateSpecialization(specialization);
+        var result = await _specializationService.UpdateSpecialization(specialization);
 
         if (result.IsFailure)
         {
@@ -64,9 +64,9 @@ public class SpecializationController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpDelete("{id}")]
-    public ActionResult<SpecializationView> DeleteSpecialization(int id)
+    public async Task<ActionResult<SpecializationView>> DeleteSpecialization(int id)
     {
-        var result = _specializationService.DeleteSpecialization(id);
+        var result = await _specializationService.DeleteSpecialization(id);
 
         if (result.IsFailure)
         {

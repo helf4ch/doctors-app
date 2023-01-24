@@ -52,6 +52,8 @@ builder.Services.AddTransient<ScheduleService>();
 builder.Services.AddTransient<SpecializationService>();
 builder.Services.AddTransient<UserService>();
 
+builder.Services.AddDateOnlyTimeOnlyStringConverters();
+
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

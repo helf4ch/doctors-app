@@ -18,9 +18,9 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<ScheduleView> GetScheduleByDate(int doctorId, DateOnly date)
+    public async Task<ActionResult<ScheduleView>> GetScheduleByDate(int doctorId, DateOnly date)
     {
-        var result = _scheduleService.GetScheduleByDate(doctorId, date);
+        var result = await _scheduleService.GetScheduleByDate(doctorId, date);
 
         if (result.IsFailure)
         {
@@ -32,7 +32,7 @@ public class ScheduleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPost]
-    public ActionResult<ScheduleView> CreateSchedule(
+    public async Task<ActionResult<ScheduleView>> CreateSchedule(
         int doctorId,
         [FromQuery] DateOnly date,
         [FromQuery] TimeOnly startOfShift,
@@ -42,11 +42,12 @@ public class ScheduleController : ControllerBase
         var schedule = new Schedule
         {
             DoctorId = doctorId,
+            Date = date,
             StartOfShift = startOfShift,
             EndOfShift = endOfShift
         };
 
-        var result = _scheduleService.CreateSchedule(schedule);
+        var result = await _scheduleService.CreateSchedule(schedule);
 
         if (result.IsFailure)
         {
@@ -58,7 +59,7 @@ public class ScheduleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("{id}")]
-    public ActionResult<ScheduleView> UpdateSchedule(
+    public async Task<ActionResult<ScheduleView>> UpdateSchedule(
         int id,
         int doctorId,
         [FromQuery] DateOnly date,
@@ -74,7 +75,7 @@ public class ScheduleController : ControllerBase
             EndOfShift = endOfShift
         };
 
-        var result = _scheduleService.UpdateSchedule(schedule);
+        var result = await _scheduleService.UpdateSchedule(schedule);
 
         if (result.IsFailure)
         {
@@ -86,9 +87,9 @@ public class ScheduleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpDelete("{id}")]
-    public ActionResult<ScheduleView> DeleteSchedule(int id)
+    public async Task<ActionResult<ScheduleView>> DeleteSchedule(int id)
     {
-        var result = _scheduleService.DeleteSchedule(id);
+        var result = await _scheduleService.DeleteSchedule(id);
 
         if (result.IsFailure)
         {

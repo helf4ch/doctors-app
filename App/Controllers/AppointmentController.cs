@@ -27,9 +27,9 @@ public class AppointmentController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpGet("{id}")]
-    public ActionResult<AppointmentView> GetAppointment(int id)
+    public async Task<ActionResult<AppointmentView>> GetAppointment(int id)
     {
-        var result = _appointmentService.GetAppointment(id);
+        var result = await _appointmentService.GetAppointment(id);
 
         if (result.IsFailure)
         {
@@ -41,7 +41,7 @@ public class AppointmentController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public ActionResult<AppointmentView> CreateAppointment(
+    public async Task<ActionResult<AppointmentView>> CreateAppointment(
         int doctorId,
         [FromQuery] DateOnly date,
         [FromQuery] TimeOnly startTime
@@ -55,21 +55,21 @@ public class AppointmentController : ControllerBase
             StartTime = startTime
         };
 
-        var doctor = _doctorService.GetDoctor(doctorId);
+        var doctor = await _doctorService.GetDoctor(doctorId);
 
         if (doctor.IsFailure)
         {
             return Problem(statusCode: 404, detail: doctor.Error);
         }
 
-        var schedule = _scheduleService.GetScheduleByDate(doctorId, date);
+        var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
 
         if (schedule.IsFailure)
         {
             return Problem(statusCode: 404, detail: schedule.Error);
         }
 
-        var result = _appointmentService.CreateAppointment(
+        var result = await _appointmentService.CreateAppointment(
             appointment,
             doctor.Value!,
             schedule.Value!
@@ -85,7 +85,7 @@ public class AppointmentController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("{id}")]
-    public ActionResult<AppointmentView> UpdateAppointment(
+    public async Task<ActionResult<AppointmentView>> UpdateAppointment(
         int id,
         int userId,
         int doctorId,
@@ -102,7 +102,7 @@ public class AppointmentController : ControllerBase
             StartTime = startTime
         };
 
-        var result = _appointmentService.UpdateAppointment(appointment);
+        var result = await _appointmentService.UpdateAppointment(appointment);
 
         if (result.IsFailure)
         {
@@ -114,9 +114,9 @@ public class AppointmentController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpDelete("{id}")]
-    public ActionResult<AppointmentView> DeleteAppointment(int id)
+    public async Task<ActionResult<AppointmentView>> DeleteAppointment(int id)
     {
-        var result = _appointmentService.DeleteAppointment(id);
+        var result = await _appointmentService.DeleteAppointment(id);
 
         if (result.IsFailure)
         {
@@ -127,12 +127,15 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("all")]
-    public ActionResult<List<AppointmentView>> GetAllAppointmentsBySpecialization(
+    public async Task<ActionResult<List<AppointmentView>>> GetAllAppointmentsBySpecialization(
         int specializationId,
         [FromQuery] DateOnly date
     )
     {
-        var result = _appointmentService.GetAllAppointmentsBySpecialization(specializationId, date);
+        var result = await _appointmentService.GetAllAppointmentsBySpecialization(
+            specializationId,
+            date
+        );
 
         if (result.IsFailure)
         {

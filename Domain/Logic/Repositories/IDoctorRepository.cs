@@ -4,6 +4,6 @@ namespace Domain.Logic.Repositories;
 
 public interface IDoctorRepository : IRepository<Doctor>
 {
-    List<Doctor> GetAll();
-    List<Doctor> GetAllBySpecialization(int specializationId);
+    Task<List<Doctor>> GetAll();
+    Task<List<Doctor>> GetAllBySpecialization(int specializationId);
 }

@@ -13,7 +13,7 @@ public class SpecializationService
         _db = db;
     }
 
-    public Result<Specialization> GetSpecialization(int id)
+    public async Task<Result<Specialization>> GetSpecialization(int id)
     {
         if (id == 0)
         {
@@ -23,7 +23,7 @@ public class SpecializationService
         }
         try
         {
-            var success = _db.Get(id);
+            var success = await _db.Get(id);
 
             if (success is null)
             {
@@ -42,7 +42,7 @@ public class SpecializationService
         }
     }
 
-    public Result<Specialization> CreateSpecialization(Specialization specialization)
+    public async Task<Result<Specialization>> CreateSpecialization(Specialization specialization)
     {
         if (specialization.IsValid().IsFailure)
         {
@@ -53,7 +53,7 @@ public class SpecializationService
 
         try
         {
-            var success = _db.Create(specialization);
+            var success = await _db.Create(specialization);
 
             return Result.Ok<Specialization>(success);
         }
@@ -65,7 +65,7 @@ public class SpecializationService
         }
     }
 
-    public Result<Specialization> UpdateSpecialization(Specialization specialization)
+    public async Task<Result<Specialization>> UpdateSpecialization(Specialization specialization)
     {
         if (specialization.IsValid().IsFailure)
         {
@@ -76,7 +76,7 @@ public class SpecializationService
 
         try
         {
-            var success = _db.Update(specialization);
+            var success = await _db.Update(specialization);
 
             return Result.Ok<Specialization>(success);
         }
@@ -88,7 +88,7 @@ public class SpecializationService
         }
     }
 
-    public Result<Specialization> DeleteSpecialization(int id)
+    public async Task<Result<Specialization>> DeleteSpecialization(int id)
     {
         if (id == 0)
         {
@@ -99,7 +99,7 @@ public class SpecializationService
 
         try
         {
-            var success = _db.Delete(id);
+            var success = await _db.Delete(id);
 
             return Result.Ok<Specialization>(success);
         }

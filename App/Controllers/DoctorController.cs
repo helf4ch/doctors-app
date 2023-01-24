@@ -18,9 +18,9 @@ public class DoctorController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<DoctorView> GetDoctor(int id)
+    public async Task<ActionResult<DoctorView>> GetDoctor(int id)
     {
-        var result = _doctorService.GetDoctor(id);
+        var result = await _doctorService.GetDoctor(id);
 
         if (result.IsFailure)
         {
@@ -30,9 +30,9 @@ public class DoctorController : ControllerBase
         return Ok(new DoctorView(result.Value!));
     }
 
-    [Authorize(Roles = "Administator")]
+    [Authorize(Roles = "Administrator")]
     [HttpPost]
-    public ActionResult<DoctorView> CreateDoctor(
+    public async Task<ActionResult<DoctorView>> CreateDoctor(
         string name,
         string? secondname,
         string? surname,
@@ -49,7 +49,7 @@ public class DoctorController : ControllerBase
             AppointmentTimeMinutes = appointmentTimeMinutes
         };
 
-        var result = _doctorService.CreateDoctor(doctor);
+        var result = await _doctorService.CreateDoctor(doctor);
 
         if (result.IsFailure)
         {
@@ -59,9 +59,9 @@ public class DoctorController : ControllerBase
         return Ok(new DoctorView(result.Value!));
     }
 
-    [Authorize(Roles = "Administator")]
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{id}")]
-    public ActionResult<DoctorView> UpdateDoctor(
+    public async Task<ActionResult<DoctorView>> UpdateDoctor(
         int id,
         string name,
         string secondname,
@@ -80,7 +80,7 @@ public class DoctorController : ControllerBase
             AppointmentTimeMinutes = appointmentTimeMinutes
         };
 
-        var result = _doctorService.UpdateDoctor(doctor);
+        var result = await _doctorService.UpdateDoctor(doctor);
 
         if (result.IsFailure)
         {
@@ -90,11 +90,11 @@ public class DoctorController : ControllerBase
         return Ok(new DoctorView(result.Value!));
     }
 
-    [Authorize(Roles = "Administator")]
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{id}")]
-    public ActionResult<DoctorView> DeleteDoctor(int id)
+    public async Task<ActionResult<DoctorView>> DeleteDoctor(int id)
     {
-        var result = _doctorService.DeleteDoctor(id);
+        var result = await _doctorService.DeleteDoctor(id);
 
         if (result.IsFailure)
         {
@@ -105,9 +105,9 @@ public class DoctorController : ControllerBase
     }
 
     [HttpGet("all")]
-    public ActionResult<List<DoctorView>> GetAllDoctors()
+    public async Task<ActionResult<List<DoctorView>>> GetAllDoctors()
     {
-        var result = _doctorService.GetAllDoctors();
+        var result = await _doctorService.GetAllDoctors();
 
         if (result.IsFailure)
         {
@@ -124,9 +124,11 @@ public class DoctorController : ControllerBase
     }
 
     [HttpGet("all")]
-    public ActionResult<List<DoctorView>> GetAllDoctorsBySpecialization(int specializationId)
+    public async Task<ActionResult<List<DoctorView>>> GetAllDoctorsBySpecialization(
+        int specializationId
+    )
     {
-        var result = _doctorService.GetAllDoctorsBySpecialization(specializationId);
+        var result = await _doctorService.GetAllDoctorsBySpecialization(specializationId);
 
         if (result.IsFailure)
         {

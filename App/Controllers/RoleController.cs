@@ -18,9 +18,9 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<RoleView> GetRole(int id)
+    public async Task<ActionResult<RoleView>> GetRole(int id)
     {
-        var result = _roleService.GetRole(id);
+        var result = await _roleService.GetRole(id);
 
         if (result.IsFailure)
         {
@@ -32,11 +32,11 @@ public class RoleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPost]
-    public ActionResult<RoleView> CreateRole(string name)
+    public async Task<ActionResult<RoleView>> CreateRole(string name)
     {
         var role = new Role { Name = name };
 
-        var result = _roleService.CreateRole(role);
+        var result = await _roleService.CreateRole(role);
 
         if (result.IsFailure)
         {
@@ -48,11 +48,11 @@ public class RoleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpPut("{id}")]
-    public ActionResult<RoleView> UpdateRole(int id, string name)
+    public async Task<ActionResult<RoleView>> UpdateRole(int id, string name)
     {
         var role = new Role { Id = id, Name = name };
 
-        var result = _roleService.UpdateRole(role);
+        var result = await _roleService.UpdateRole(role);
 
         if (result.IsFailure)
         {
@@ -64,9 +64,9 @@ public class RoleController : ControllerBase
 
     [Authorize(Roles = "Administrator")]
     [HttpDelete("{id}")]
-    public ActionResult<RoleView> DeleteRole(int id)
+    public async Task<ActionResult<RoleView>> DeleteRole(int id)
     {
-        var result = _roleService.DeleteRole(id);
+        var result = await _roleService.DeleteRole(id);
 
         if (result.IsFailure)
         {

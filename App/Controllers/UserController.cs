@@ -18,11 +18,11 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public ActionResult<UserView> GetUser()
+    public async Task<ActionResult<UserView>> GetUser()
     {
         var id = GetId();
 
-        var result = _userService.GetUser(id);
+        var result = await _userService.GetUser(id);
 
         if (result.IsFailure)
         {
@@ -34,9 +34,13 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    public ActionResult<UserView> UpdateUser(string name, string secondname, string surname)
+    public async Task<ActionResult<UserView>> UpdateUser(
+        string name,
+        string secondname,
+        string surname
+    )
     {
-        var user = _userService.GetUser(GetId());
+        var user = await _userService.GetUser(GetId());
 
         if (user.IsFailure)
         {
@@ -47,7 +51,7 @@ public class UserController : ControllerBase
         user.Value.Secondname = secondname;
         user.Value.Surname = surname;
 
-        var result = _userService.UpdateUser(user.Value);
+        var result = await _userService.UpdateUser(user.Value);
 
         if (result.IsFailure)
         {

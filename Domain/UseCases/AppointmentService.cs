@@ -13,7 +13,7 @@ public class AppointmentService
         _db = db;
     }
 
-    public Result<Appointment> GetAppointment(int id)
+    public async Task<Result<Appointment>> GetAppointment(int id)
     {
         if (id == 0)
         {
@@ -22,7 +22,7 @@ public class AppointmentService
 
         try
         {
-            var success = _db.Get(id);
+            var success = await _db.Get(id);
 
             if (success is null)
             {
@@ -39,7 +39,7 @@ public class AppointmentService
         }
     }
 
-    public Result<Appointment> CreateAppointment(
+    public async Task<Result<Appointment>> CreateAppointment(
         Appointment appointment,
         Doctor doctor,
         Schedule schedule
@@ -78,7 +78,7 @@ public class AppointmentService
 
         try
         {
-            var appointments = _db.GetAllByTime(
+            var appointments = await _db.GetAllByTime(
                 appointment.DoctorId,
                 appointment.Date,
                 appointment.StartTime.AddMinutes(1 - doctor.AppointmentTimeMinutes),
@@ -92,7 +92,7 @@ public class AppointmentService
                 );
             }
 
-            var success = _db.Create(appointment);
+            var success = await _db.Create(appointment);
 
             return Result.Ok<Appointment>(success);
         }
@@ -102,7 +102,7 @@ public class AppointmentService
         }
     }
 
-    public Result<Appointment> UpdateAppointment(Appointment appointment)
+    public async Task<Result<Appointment>> UpdateAppointment(Appointment appointment)
     {
         if (appointment.IsValid().IsFailure)
         {
@@ -113,7 +113,7 @@ public class AppointmentService
 
         try
         {
-            var success = _db.Update(appointment);
+            var success = await _db.Update(appointment);
 
             return Result.Ok<Appointment>(success);
         }
@@ -123,7 +123,7 @@ public class AppointmentService
         }
     }
 
-    public Result<Appointment> DeleteAppointment(int id)
+    public async Task<Result<Appointment>> DeleteAppointment(int id)
     {
         if (id == 0)
         {
@@ -132,7 +132,7 @@ public class AppointmentService
 
         try
         {
-            var success = _db.Delete(id);
+            var success = await _db.Delete(id);
 
             return Result.Ok(success);
         }
@@ -142,7 +142,7 @@ public class AppointmentService
         }
     }
 
-    public Result<List<Appointment>> GetAllAppointmentsBySpecialization(
+    public async Task<Result<List<Appointment>>> GetAllAppointmentsBySpecialization(
         int specializationId,
         DateOnly date
     )
@@ -156,7 +156,7 @@ public class AppointmentService
 
         try
         {
-            var success = _db.GetAllBySpecialization(specializationId, date);
+            var success = await _db.GetAllBySpecialization(specializationId, date);
 
             return Result.Ok<List<Appointment>>(success);
         }

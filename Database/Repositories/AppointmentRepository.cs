@@ -14,59 +14,58 @@ public class AppointmentRepository : IAppointmentRepository
         _context = context;
     }
 
-    public Appointment? Get(int id)
+    public async Task<Appointment?> Get(int id)
     {
-        var result = _context.Appointments
+        var result = await _context.Appointments
             .AsNoTracking()
-            .FirstOrDefault(a => a.Id == id)
-            ?.ToDomain();
+            .FirstOrDefaultAsync(a => a.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public Appointment Create(Appointment item)
+    public async Task<Appointment> Create(Appointment item)
     {
         var model = item.ToModel();
 
-        _context.Appointments.Add(model);
-        Save();
+        await _context.Appointments.AddAsync(model);
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Appointment Update(Appointment item)
+    public async Task<Appointment> Update(Appointment item)
     {
         var model = item.ToModel();
 
         _context.Appointments.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Appointment Delete(int id)
+    public async Task<Appointment> Delete(int id)
     {
-        var appointment = _context.Appointments.AsNoTracking().First(a => a.Id == id);
+        var appointment = await _context.Appointments.AsNoTracking().FirstAsync(a => a.Id == id);
 
         _context.Appointments.Remove(appointment);
-        Save();
+        await Save();
 
         return appointment.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Appointment> GetAllByTime(
+    public async Task<List<Appointment>> GetAllByTime(
         int doctorId,
         DateOnly date,
         TimeOnly startTime,
         TimeOnly endTime
     )
     {
-        var result = _context.Appointments
+        var result = await _context.Appointments
             .AsNoTracking()
             .Where(
                 a =>
@@ -76,18 +75,18 @@ public class AppointmentRepository : IAppointmentRepository
                     && a.StartTime <= endTime
             )
             .Select(a => a.ToDomain())
-            .ToList();
+            .ToListAsync();
 
         return result;
     }
 
-    public List<Appointment> GetAllBySpecialization(int specializationId, DateOnly date)
+    public async Task<List<Appointment>> GetAllBySpecialization(int specializationId, DateOnly date)
     {
-        var result = _context.Doctors
+        var result = await _context.Doctors
             .AsNoTracking()
             .Where(d => d.SpecializationId == specializationId)
             .Join(_context.Appointments, d => d.Id, a => a.DoctorId, (d, a) => a.ToDomain())
-            .ToList();
+            .ToListAsync();
 
         return result;
     }

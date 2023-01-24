@@ -29,16 +29,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("login")]
-    public ActionResult<UserView> LogIn(string phoneNumber, string password)
+    public async Task<ActionResult<UserView>> LogIn(string phoneNumber, string password)
     {
-        var user = _userService.Authorization(phoneNumber, password);
+        var user = await _userService.Authorization(phoneNumber, password);
 
         if (user.IsFailure)
         {
             return Problem(statusCode: 404, detail: user.Error);
         }
 
-        var role = _roleService.GetRole(user.Value!.RoleId);
+        var role = await _roleService.GetRole(user.Value!.RoleId);
 
         if (role.IsFailure)
         {
@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public ActionResult SingUp(
+    public async Task<ActionResult> SingUp(
         string phoneNumber,
         string name,
         string? secondname,
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
             Password = password
         };
 
-        var result = _userService.Registration(user);
+        var result = await _userService.Registration(user);
 
         if (result.IsFailure)
         {

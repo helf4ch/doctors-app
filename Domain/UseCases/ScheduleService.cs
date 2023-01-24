@@ -13,7 +13,7 @@ public class ScheduleService
         _db = db;
     }
 
-    public Result<Schedule> GetScheduleByDate(int doctorId, DateOnly date)
+    public async Task<Result<Schedule>> GetScheduleByDate(int doctorId, DateOnly date)
     {
         if (doctorId == 0)
         {
@@ -22,7 +22,7 @@ public class ScheduleService
 
         try
         {
-            var success = _db.GetByDate(doctorId, date);
+            var success = await _db.GetByDate(doctorId, date);
 
             if (success is null)
             {
@@ -39,7 +39,7 @@ public class ScheduleService
         }
     }
 
-    public Result<Schedule> CreateSchedule(Schedule schedule)
+    public async Task<Result<Schedule>> CreateSchedule(Schedule schedule)
     {
         if (schedule.IsValid().IsFailure)
         {
@@ -50,14 +50,14 @@ public class ScheduleService
 
         try
         {
-            var item = _db.GetByDate(schedule.DoctorId, schedule.Date);
+            var item = await _db.GetByDate(schedule.DoctorId, schedule.Date);
 
             if (item is not null)
             {
                 return Result.Fail<Schedule>("ScheduleService.CreateSchedule: Date is busy.");
             }
 
-            var success = _db.Create(schedule);
+            var success = await _db.Create(schedule);
 
             return Result.Ok<Schedule>(success);
         }
@@ -67,7 +67,7 @@ public class ScheduleService
         }
     }
 
-    public Result<Schedule> UpdateSchedule(Schedule schedule)
+    public async Task<Result<Schedule>> UpdateSchedule(Schedule schedule)
     {
         if (schedule.IsValid().IsFailure)
         {
@@ -78,7 +78,7 @@ public class ScheduleService
 
         try
         {
-            var success = _db.Update(schedule);
+            var success = await _db.Update(schedule);
 
             return Result.Ok<Schedule>(success);
         }
@@ -88,7 +88,7 @@ public class ScheduleService
         }
     }
 
-    public Result<Schedule> DeleteSchedule(int id)
+    public async Task<Result<Schedule>> DeleteSchedule(int id)
     {
         if (id == 0)
         {
@@ -96,7 +96,7 @@ public class ScheduleService
         }
         try
         {
-            var success = _db.Delete(id);
+            var success = await _db.Delete(id);
 
             return Result.Ok<Schedule>(success);
         }

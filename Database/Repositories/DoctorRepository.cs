@@ -14,62 +14,62 @@ public class DoctorRepository : IDoctorRepository
         _context = context;
     }
 
-    public Doctor? Get(int id)
+    public async Task<Doctor?> Get(int id)
     {
-        var result = _context.Doctors.AsNoTracking().FirstOrDefault(d => d.Id == id)?.ToDomain();
+        var result = await _context.Doctors.AsNoTracking().FirstOrDefaultAsync(d => d.Id == id);
 
-        return result;
+        return result?.ToDomain();
     }
 
-    public Doctor Create(Doctor item)
+    public async Task<Doctor> Create(Doctor item)
     {
         var model = item.ToModel();
 
-        _context.Doctors.Add(model);
-        Save();
+        await _context.Doctors.AddAsync(model);
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Doctor Update(Doctor item)
+    public async Task<Doctor> Update(Doctor item)
     {
         var model = item.ToModel();
 
         _context.Doctors.Update(model);
-        Save();
+        await Save();
 
         return model.ToDomain();
     }
 
-    public Doctor Delete(int id)
+    public async Task<Doctor> Delete(int id)
     {
-        var doctor = _context.Doctors.AsNoTracking().First(d => d.Id == id);
+        var doctor = await _context.Doctors.AsNoTracking().FirstAsync(d => d.Id == id);
 
         _context.Doctors.Remove(doctor);
-        Save();
+        await Save();
 
         return doctor.ToDomain();
     }
 
-    public void Save()
+    public async Task Save()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Doctor> GetAll()
+    public async Task<List<Doctor>> GetAll()
     {
-        var result = _context.Doctors.AsNoTracking().Select(d => d.ToDomain()).ToList();
+        var result = await _context.Doctors.AsNoTracking().Select(d => d.ToDomain()).ToListAsync();
 
         return result;
     }
 
-    public List<Doctor> GetAllBySpecialization(int specializationId)
+    public async Task<List<Doctor>> GetAllBySpecialization(int specializationId)
     {
-        var result = _context.Doctors
+        var result = await _context.Doctors
             .AsNoTracking()
             .Where(d => d.SpecializationId == specializationId)
             .Select(d => d.ToDomain())
-            .ToList();
+            .ToListAsync();
 
         return result;
     }
